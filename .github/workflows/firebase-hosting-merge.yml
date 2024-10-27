@@ -1,0 +1,20 @@
+name: Deploy to Firebase Hosting on merge
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: sed -i 's/firebase_api_key/${{ secrets.FIREBASE_API_KEY }}/g' ./bio-heating-client/src/modules/firebase.ts
+      - run: cd "client" && npm install && npm run build
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BIO_HEATING }}
+          channelId: live
+          projectId: moti-vibes
