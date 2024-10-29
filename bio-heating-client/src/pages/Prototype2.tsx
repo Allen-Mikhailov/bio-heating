@@ -20,7 +20,7 @@ function Prototype2()
 
         let new_string = ""
         new_thread.map(([number, number2, _time]) => {
-            new_string += `${Math.round(number*100)/100} C, ${Math.round(number2*100)/100} C}, ${_time.toString()}\n`
+            new_string += `${Math.round(number*100)/100} C ${Math.round(number2*100)/100} C    ${_time.toString()}\n`
         })
         setDisplayString(new_string)
     }, [])

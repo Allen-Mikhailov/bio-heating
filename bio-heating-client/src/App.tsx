@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
 
 import HomePage from './pages/HomePage'
-import Prototype2 from './pages/Prototype2'
+import Prototype2 from './pages/Prototype2.tsx'
+import Prototype3 from './pages/Prototype3.tsx'
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -13,12 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage/>} />
         <Route path="/prototype2" element={<Prototype2/>} />
-          {/* <Route path="/" element={<Home/>} />
-          <Route path="/userinfo" element={<Userinfo/>} />
-          <Route path="/todo" element={<Todo/>} />
-          <Route path="/chat/:id" element={<Chat/>} />
-          <Route path="/matches" element={<ChatSelect/>} />
-          <Route path="/match" element={<Match/>} /> */}
+        <Route path="/prototype3" element={<Prototype3/>} />
         </Routes>
     </BrowserRouter>
   )
