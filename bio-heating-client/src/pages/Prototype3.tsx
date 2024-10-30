@@ -50,9 +50,11 @@ function Prototype3()
             series={[
                 {
                 data: controlData,
+                label: 'Control Tank',
                 },
                 {
                 data: experimentalData,
+                label: 'Expirimental Tank',
                 },
             ]}
             width={500}

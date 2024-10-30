@@ -1,18 +1,8 @@
 import { Timestamp } from "firebase/firestore";
 
-interface example_settings
+function generate_temp_example(settings)
 {
-    packet_count: number,
-    date_start: Timestamp,
-    date_end: Timestamp,
-    min: number,
-    read_interval: number,
-    max: number
-}
-
-function generate_temp_example(settings: example_settings): [number[], number[], Timestamp[]][]
-{
-    const packets: [number[], number[], Timestamp[]][] = [];
+    const packets = [];
 
     const date_start = settings.date_start.toMillis()
     const date_end = settings.date_end.toMillis()
@@ -31,9 +21,9 @@ function generate_temp_example(settings: example_settings): [number[], number[],
     for (let i = 0; i < settings.packet_count; i++)
     {
         
-        const values1: number[] = [];
-        const values2: number[] = [];
-        const timestamps: Timestamp[] = [];
+        const values1 = [];
+        const values2 = [];
+        const timestamps = [];
         for (let j = 0; j < reads_per_packet; j++)
         {
             value1 += (Math.random()-.5) * (range / 20)
@@ -57,7 +47,7 @@ const back_time = 100
 
 function generate_random_temp_example()
 {
-    const settings: example_settings = {
+    const settings = {
         date_start: new Timestamp(Date.now()/1000-back_time, 0),
         date_end: new Timestamp(Date.now()/1000, 0),
         packet_count: 4,
@@ -69,4 +59,4 @@ function generate_random_temp_example()
     return generate_temp_example(settings)
 }
 
-export { generate_random_temp_example, generate_temp_example, type example_settings }
+export { generate_random_temp_example, generate_temp_example }
