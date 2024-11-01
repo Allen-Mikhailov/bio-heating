@@ -1,4 +1,5 @@
 import { readFileSync, readdirSync } from 'fs';
+import { db } from './firebase';
 
 // Getting File path
 const devices_path = "/sys/bus/w1/devices/w1_bus_master1/"
@@ -23,7 +24,7 @@ while (true)
 {
     console.log("Reading Files:")
     valid_dirents.map((dirent) => {
-        const data = readFileSync(devices_path+dirent.name+"/temperature.txt", "utf-8")
+        const data = readFileSync(devices_path+dirent.name+"/temperature", "utf-8")
         console.log("Temperature:")
         console.log(data)
     })
