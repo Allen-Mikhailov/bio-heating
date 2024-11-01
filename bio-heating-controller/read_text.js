@@ -1,5 +1,5 @@
 import { readFileSync, readdirSync } from 'fs';
-import { db } from './firebase';
+// import { db } from './firebase.js';
 
 // Getting File path
 const devices_path = "/sys/bus/w1/devices/w1_bus_master1/"
