@@ -23,7 +23,8 @@ while (true)
 {
     console.log("Reading Files:")
     valid_dirents.map((dirent) => {
-        const data = readFileSync(devices_path+dirent.name, "utf-8")
+        const data = readFileSync(devices_path+dirent.name+"/temperature.txt", "utf-8")
+        console.log("Temperature:")
         console.log(data)
     })
     await sleep(1000)
