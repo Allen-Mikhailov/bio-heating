@@ -11,6 +11,8 @@ files.map(dirent => {
         valid_dirents.push(dirent)
 })
 
+console.log(valid_dirents)
+
 function sleep(ms) {
     return new Promise((resolve) => {
         setTimeout(resolve, ms);
@@ -21,7 +23,8 @@ while (true)
 {
     console.log("Reading Files:")
     valid_dirents.map((dirent) => {
-        readFileSync(devices_path+dirent.name)
+        const data = readFileSync(devices_path+dirent.name, "utf-8")
+        console.log(data)
     })
     await sleep(1000)
 }
