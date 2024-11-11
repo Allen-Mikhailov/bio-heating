@@ -26,7 +26,6 @@ while (true)
     valid_dirents.map((dirent) => {
         const data = readFileSync(devices_path+dirent.name+"/temperature", "utf-8")
         console.log("Temperature of %s : %s C", dirent.name, parseFloat(data)/1000)
-        console.log(data)
     })
-    await sleep(1000)
+    await sleep(3000)
 }
