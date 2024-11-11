@@ -10,6 +10,7 @@
   "description": "",
   "type": "module",
   "dependencies": {
+    "@ngrok/ngrok": "^1.4.1",
     "firebase": "^11.0.1"
   }
 }
