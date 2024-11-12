@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom"
 
+import Prototype5 from "./Prototype5"
+
 function HomePage()
 {
     return <div>
-        <div><Link to={"/Prototype2"}>Prototype2</Link></div>
-        <div><Link to={"/Prototype3"}>Prototype3</Link></div>
+        <Prototype5/>
     </div>
 }
 

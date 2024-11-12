@@ -7,7 +7,7 @@ import { query, getDocs } from "firebase/firestore"
 
 import { convert_data } from "../modules/data_helpers"
 
-function Prototype4()
+function Prototype5()
 {
     const [experimentId, setExperimentId] = useState("")
     const [axisData, setAxisData] = useState<number[]>([])
@@ -61,10 +61,9 @@ function Prototype4()
     }
 
     return <div>
-        <h1>Prototype 4</h1>
-        <h2>Displaying generated data</h2>
+        
         Experiment Id<input value={experimentId} onChange={(e) => setExperimentId(e.target.value)}></input>
-        <button onClick={request_data}>Get Data</button>
+        <button onClick={request_data}>Get Data</button><br/>
         <LineChart
             xAxis={[{ data: axisData }]}
             series={[
@@ -77,10 +76,11 @@ function Prototype4()
                 label: 'Expirimental Tank',
                 },
             ]}
-            width={500}
-            height={300}
+            width={1000}
+            height={600}
+            
             />
     </div>
 }
 
-export default Prototype4
+export default Prototype5
