@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import dayjs from "dayjs";
 
 function convert_data(data: [number[], number[], Timestamp[]][]): [number, number, Timestamp][]
 {
@@ -18,4 +19,17 @@ function convert_data(data: [number[], number[], Timestamp[]][]): [number, numbe
     return values
 }
 
-export { convert_data }
+function generate_csv(thread: [number, number, Timestamp][])
+{
+    let csv_string = `TIME,CONTROL_TEMP_C,EXPERIMENTAL_TEMP_C\n`
+    for (let i = 0; i < thread.length; i++)
+    {
+        csv_string += `${dayjs(thread[i][2].toDate()).format("YYYY-MM-DD HH:mm:ss")},${thread[i][0]},${thread[i][1]}\n`
+    }
+
+    csv_string = csv_string.substring(0, csv_string.length-1)
+
+    return csv_string
+}
+
+export { convert_data, generate_csv }

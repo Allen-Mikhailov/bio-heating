@@ -5,14 +5,31 @@ import { LineChart } from "@mui/x-charts"
 import { db } from "../modules/firebase"
 import { query, getDocs } from "firebase/firestore"
 
-import { convert_data } from "../modules/data_helpers"
+import { convert_data, generate_csv } from "../modules/data_helpers"
 
 function Prototype5()
 {
     const [experimentId, setExperimentId] = useState("")
+    const [thread, setThread] = useState<[number, number, Timestamp][]>([])
+
     const [axisData, setAxisData] = useState<number[]>([])
     const [controlData, setControlData] = useState<number[]>([])
     const [experimentalData, setExperimentalData] = useState<number[]>([])
+
+    async function download_csv()
+    {
+        const thread = await request_data()
+
+        const csv = "data:text/csv;charset=utf-8,"+generate_csv(thread)
+        console.log(csv)
+        let encodedUri = encodeURI(csv);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "my_data.csv");
+        document.body.appendChild(link); // Required for FF
+
+        link.click();
+    }
 
     async function request_data()
     {
@@ -32,12 +49,10 @@ function Prototype5()
             const data: firebase_packet = doc.data() as firebase_packet
             packets.push([data.control_temp, data.experimental_temp, data.temperature_timestamps])
         })
-
-        console.log("packets", packets)
         
         const new_thread = convert_data(packets)
 
-        console.log("new_thread", new_thread)
+        setThread(new_thread)
 
         const start_time = new_thread[0][2].toMillis()/1000
 
@@ -58,12 +73,15 @@ function Prototype5()
         setAxisData(new_axis)
         setControlData(new_control)
         setExperimentalData(new_experimental)
+
+        return new_thread
     }
 
     return <div>
         
         Experiment Id<input value={experimentId} onChange={(e) => setExperimentId(e.target.value)}></input>
         <button onClick={request_data}>Get Data</button><br/>
+        <button onClick={download_csv}>Download Data</button><br/>
         <LineChart
             xAxis={[{ data: axisData }]}
             series={[
