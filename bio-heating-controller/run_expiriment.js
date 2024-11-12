@@ -9,7 +9,7 @@ const devices_path = "/sys/bus/w1/devices/w1_bus_master1/"
 const CONTROL_DEVICE = "28-3cf104575517"
 const EXPIRIMENTAL_DEVICE = "28-01144d041caa"
 
-const EXPIRIMENT_NAME = "test1"
+const EXPERIMENT_NAME = "test1"
 const READ_INTERVAL = 3 * 1000
 const PACKET_LENGTH = 10
 
@@ -37,7 +37,7 @@ function read_sensor(dirent)
 function generate_new_packet()
 {
     return {
-        "expiriment_id": EXPIRIMENT_NAME,
+        "experiment_id": EXPERIMENT_NAME,
         "control_temp": [],
         "experimental_temp": [],
         "temperature_timestamps": []
@@ -51,19 +51,19 @@ while (true)
 {
     // Reading Sensors
     const control_temp = read_sensor(valid_dirents[CONTROL_DEVICE])
-    const expirimental_temp = read_sensor(valid_dirents[EXPIRIMENTAL_DEVICE])
+    const experimental_temp = read_sensor(valid_dirents[EXPIRIMENTAL_DEVICE])
 
 
     // Logging
     console.log("Control %s C, Expirment %s C, dif %s", 
         control_temp, 
-        expirimental_temp, 
-        expirimental_temp - control_temp
+        experimental_temp, 
+        experimental_temp - control_temp
     )
 
     // Writing to packet
     packet.control_temp.push(control_temp)
-    packet.experimental_temp.push(expirimental_temp)
+    packet.experimental_temp.push(experimental_temp)
     packet.temperature_timestamps.push(Timestamp.now())
 
     packet_additions += 1

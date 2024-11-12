@@ -32,8 +32,12 @@ function Prototype4()
             const data: firebase_packet = doc.data() as firebase_packet
             packets.push([data.control_temp, data.experimental_temp, data.temperature_timestamps])
         })
+
+        console.log("packets", packets)
         
         const new_thread = convert_data(packets)
+
+        console.log("new_thread", new_thread)
 
         const start_time = new_thread[0][2].toMillis()/1000
 
