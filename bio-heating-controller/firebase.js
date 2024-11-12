@@ -2,6 +2,8 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import * as fs from "fs"
 import path from "path";
+import { fileURLToPath } from 'url';
+
 
 const firebaseConfig = {
   apiKey: "firebase_api_key",
@@ -13,7 +15,7 @@ const firebaseConfig = {
   measurementId: "G-Q6HD131V0H"
 };
 
-const data = fs.readFileSync(path.resolve(path.dirname(require.main.filename), './firebase_api_key.txt'), "utf-8")
+const data = fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), './firebase_api_key.txt'), "utf-8")
 firebaseConfig.apiKey = data;
 
 // Initialize Firebase
