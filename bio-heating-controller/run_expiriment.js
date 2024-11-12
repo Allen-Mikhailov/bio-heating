@@ -6,7 +6,7 @@ import { addDoc, collection } from 'firebase/firestore';
 // Getting File path
 const devices_path = "/sys/bus/w1/devices/w1_bus_master1/"
 
-const CONTROL_DEVICE = "28-3cf104575517"
+const CONTROL_DEVICE = "28-3cd8f64961fe"
 const EXPIRIMENTAL_DEVICE = "28-01144d041caa"
 
 const EXPERIMENT_NAME = "test1"
