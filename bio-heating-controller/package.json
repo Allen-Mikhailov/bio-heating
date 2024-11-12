@@ -11,6 +11,7 @@
   "type": "module",
   "dependencies": {
     "@ngrok/ngrok": "^1.4.1",
-    "firebase": "^11.0.1"
+    "firebase": "^11.0.1",
+    "nodemailer": "^6.9.16"
   }
 }
