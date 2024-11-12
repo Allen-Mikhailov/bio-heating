@@ -13,7 +13,7 @@ const firebaseConfig = {
   measurementId: "G-Q6HD131V0H"
 };
 
-const data = fs.readFileSync(path.resolve(path.dirname(), './firebase_api_key.txt'), "utf-8")
+const data = fs.readFileSync(path.resolve(path.dirname(require.main.filename), './firebase_api_key.txt'), "utf-8")
 firebaseConfig.apiKey = data;
 
 // Initialize Firebase
