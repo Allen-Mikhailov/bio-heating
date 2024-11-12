@@ -20,6 +20,8 @@ files.map(dirent => {
         valid_dirents[dirent.name] = dirent
 })
 
+console.log(valid_dirents)
+
 function sleep(ms) {
     return new Promise((resolve) => {
         setTimeout(resolve, ms);
@@ -48,8 +50,8 @@ let packet_additions = 0
 while (true)
 {
     // Reading Sensors
-    const control_temp = read_sensor(files[CONTROL_DEVICE])
-    const expirimental_temp = read_sensor(files[EXPIRIMENTAL_DEVICE])
+    const control_temp = read_sensor(valid_dirents[CONTROL_DEVICE])
+    const expirimental_temp = read_sensor(valid_dirents[EXPIRIMENTAL_DEVICE])
 
 
     // Logging
