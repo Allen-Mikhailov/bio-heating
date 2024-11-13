@@ -1,3 +1,6 @@
+import { config } from 'dotenv';
+config()
+
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import * as fs from "fs"
@@ -16,7 +19,7 @@ const firebaseConfig = {
 };
 
 const data = fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), './firebase_api_key.txt'), "utf-8")
-firebaseConfig.apiKey = data;
+firebaseConfig.apiKey = process.env.FIREBASE_API_KEY;
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

@@ -1,10 +1,11 @@
+import { config } from 'dotenv';
+config()
+
 import { Timestamp } from 'firebase/firestore';
 import { readFileSync, readdirSync } from 'fs';
 import { db } from './firebase.js';
 import { addDoc, collection } from 'firebase/firestore';
-import { createTransport } from 'nodemailer';
-import path from "path";
-import { fileURLToPath } from 'url';
+import sgMail from '@sendgrid/mail'
 
 // Getting File path
 const devices_path = "/sys/bus/w1/devices/w1_bus_master1/"
@@ -19,32 +20,25 @@ const PACKET_LENGTH = 10
 const EMAIL = "bioheating.rice@gmail.com"
 const EMAIL_TARGET = "slinkyshelf8@gmail.com"
 
-const password_file = path.resolve(path.dirname(fileURLToPath(import.meta.url)), './email_password.txt')
-
-console.log("password", readFileSync(password_file, "utf-8"))
-
-const transporter = createTransport({
-    service: 'gmail',
-    auth: {
-        user: EMAIL,
-        pass: readFileSync(password_file, "utf-8")
-    }
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 function send_email(subject, text)
 {
-    transporter.sendMail({
-        from: EMAIL,
-        to: EMAIL_TARGET,
+    const msg = {
+        to: EMAIL_TARGET, // Change to your recipient
+        from: EMAIL, // Change to your verified sender
         subject: subject,
-        text: text
-    }, function(error, info){
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-        }
-    })
+        text: text,
+        html: text,
+      }
+      sgMail
+        .send(msg)
+        .then(() => {
+          console.log('Email sent')
+        })
+        .catch((error) => {
+          console.error(error)
+        })
 }
 
 // If sensor outputs this temperature it has failed

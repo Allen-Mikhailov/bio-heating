@@ -1,3 +1,4 @@
 firebase_api_key.txt
 email_password.txt
 node_modules/
+.env
