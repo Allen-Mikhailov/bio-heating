@@ -13,7 +13,7 @@ const devices_path = "/sys/bus/w1/devices/w1_bus_master1/"
 const CONTROL_DEVICE = "28-3cf104575517"
 const EXPERIMENTAL_DEVICE = "28-3cd8f64961fe"
 
-const EXPERIMENT_NAME = "test1"
+const EXPERIMENT_NAME = process.env.EXPERIMENT_NAME
 const READ_INTERVAL = 3 * 1000
 const PACKET_LENGTH = 10
 
@@ -122,7 +122,7 @@ while (true)
     packet.temperature_timestamps.push(Timestamp.now())
 
     packet_additions++;
-    total_packets_sent++;
+    
 
     // Sending Data to server
     if (packet_additions >= PACKET_LENGTH)
@@ -132,6 +132,7 @@ while (true)
         packet = generate_new_packet()
         packet_additions = 0
         console.log("Sent packet #%s to server", total_packets_sent)
+        total_packets_sent++;
     }
 
 
