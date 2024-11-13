@@ -4,6 +4,7 @@ import { db } from './firebase.js';
 import { addDoc, collection } from 'firebase/firestore';
 import { createTransport } from 'nodemailer';
 import path from "path";
+import { fileURLToPath } from 'url';
 
 // Getting File path
 const devices_path = "/sys/bus/w1/devices/w1_bus_master1/"
