@@ -21,6 +21,8 @@ const EMAIL_TARGET = "slinkyshelf8@gmail.com"
 
 const password_file = path.resolve(path.dirname(fileURLToPath(import.meta.url)), './email_password.txt')
 
+console.log("password", readFileSync(password_file, "utf-8"))
+
 const transporter = createTransport({
     service: 'gmail',
     auth: {
@@ -62,12 +64,12 @@ files.map(dirent => {
 })
 
 // Checking for Control and Experimental Sensors
-if (valid_dirents[CONTROL_DEVICE] == undefined)
+if (valid_dirents[CONTROL_DEVICE] != undefined)
     console.log("Found Control Sensor")
 else
     console.error("Unable to find Control Sensor")
 
-if (valid_dirents[EXPERIMENTAL_DEVICE] == undefined)
+if (valid_dirents[EXPERIMENTAL_DEVICE] != undefined)
     console.log("Found Experiment Sensor")
 else
     console.error("Unable to find Experiment Sensor")
