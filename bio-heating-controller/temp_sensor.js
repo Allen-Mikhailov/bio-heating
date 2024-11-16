@@ -1,9 +1,11 @@
+import { readFileSync, readdirSync } from 'fs';
+
 const DEVICES_PATH = "/sys/bus/w1/devices/w1_bus_master1/"
 const ERROR_TEMPERATURES = [0, 85] // If sensor outputs this temperature it has failed
 
 let valid_dirents = {}
 
-function find_sensors(log)
+function find_sensors(logger)
 {
     const files = readdirSync(DEVICES_PATH, { withFileTypes: true })
     files.map(dirent => {
@@ -11,10 +13,8 @@ function find_sensors(log)
         {
             valid_dirents[dirent.name] = dirent
 
-            if (log)
-            {
-                console.log("Found Valid Sensor with ID: \"%s\"", dirent.name)
-            }
+            
+            logger.info("Found Valid Sensor with ID: \"%s\"", dirent.name)
         }
     })
 }
@@ -58,17 +58,26 @@ class TempSensor
         this.on_read_failure = callback
     }
 
-    start()
+    start(logger)
     {
         if (valid_dirents[this.id] == undefined)
-            return this.on_start_failure(this, "not_found_error")
+        {
+            this.on_start_failure(this, "not_found_error")
+            return
+        }
+             
 
-        console.log("Found sensor \"%s\" with id \"%s\"", this.name, this.id)
+        logger?.info("Found sensor \"%s\" with id \"%s\"", this.name, this.id)
 
-        this.read()
+        const raw_temperature = this.raw_read()
 
-        if (is_error_temp(this.temp))
-            return this.on_start_failure(this, "read_error")
+        if (is_error_temp(raw_temperature))
+        {
+            this.on_start_failure(this, "read_error")
+            return
+        }
+
+        this.temp = raw_temperature + this.offset_temp
     }
 
     raw_read()
@@ -95,4 +104,4 @@ class TempSensor
     }
 }
 
-export default TempSensor
+export { TempSensor, find_sensors}

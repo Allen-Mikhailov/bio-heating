@@ -1,0 +1,89 @@
+[2024-11-16T14:16:45.453] [ERROR] default - Failed to find sensors
+[2024-11-16T14:16:45.460] [ERROR] default - Sensor control with id 28-3cf104575517 failed to start with error not_found_error
+[2024-11-16T14:16:45.465] [ERROR] default - Sensor experimental with id 28-3cd8f64961fe failed to start with error not_found_error
+[2024-11-16T14:16:45.470] [INFO] default - Node.js web server at 8080 is running...
+[2024-11-16T14:16:45.493] [ERROR] default - GPIO error has occured Error: ENOENT: no such file or directory, open 'C:\proc\cpuinfo'
+[2024-11-16T14:16:46.253] [INFO] default - Email of subject Critical Error with Experiment test2 sent
+[2024-11-16T14:16:46.261] [INFO] default - Ngrok started at https://b005-168-5-174-79.ngrok-free.app at port 8080
+[2024-11-16T14:16:46.263] [ERROR] default - Setup error Occured : Canceling Process (View Logs)
+[2024-11-16T14:16:46.265] [INFO] default - Attemping Safe Shutdown of components
+[2024-11-16T14:16:46.269] [ERROR] default - Heating shutdown failed with error TypeError: Cannot read properties of undefined (reading '7')
+[2024-11-16T14:16:46.426] [INFO] default - Email of subject Critical Error with Experiment test2 sent
+[2024-11-16T14:16:46.428] [INFO] default - Email of subject Critical Error with Experiment test2 sent
+[2024-11-16T14:16:46.430] [INFO] default - Email of subject Critical Error with Experiment test2 sent
+[2024-11-16T14:16:46.432] [INFO] default - Email of subject Critical Error with Experiment test2 sent
+[2024-11-16T14:55:24.861] [ERROR] default - Failed to find sensors
+[2024-11-16T14:55:24.863] [ERROR] default - Sensor control with id 28-3cf104575517 failed to start with error not_found_error
+[2024-11-16T14:55:24.864] [ERROR] default - Sensor experimental with id 28-3cd8f64961fe failed to start with error not_found_error
+[2024-11-16T14:55:24.868] [INFO] default - Node.js web server at 8080 is running...
+[2024-11-16T14:55:24.872] [ERROR] default - GPIO error has occured Error: ENOENT: no such file or directory, open 'C:\proc\cpuinfo'
+[2024-11-16T14:55:25.333] [INFO] default - Ngrok started at https://35d0-168-5-174-79.ngrok-free.app at port 8080
+[2024-11-16T14:55:25.335] [ERROR] default - Setup error Occured : Canceling Process (View Logs)
+[2024-11-16T14:55:25.336] [INFO] default - Attemping Safe Shutdown of components
+[2024-11-16T14:55:25.338] [ERROR] default - Heating shutdown failed with error TypeError: Cannot read properties of undefined (reading '7')
+[2024-11-16T14:55:27.874] [INFO] default - Sent Critical Error Email
+[2024-11-16T14:55:28.423] [ERROR] default - ResponseError: Bad Request
+    at C:\Users\slink\Documents\code\Projects\bio-heating\bio-heating-controller\node_modules\@sendgrid\client\src\classes\client.js:167:29
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+  code: 400,
+  response: {
+    headers: Object [AxiosHeaders] {
+      server: 'nginx',
+      date: 'Sat, 16 Nov 2024 20:55:29 GMT',
+      'content-type': 'application/json',
+      'content-length': '426',
+      connection: 'keep-alive',
+      'access-control-allow-origin': 'https://sendgrid.api-docs.io',
+      'access-control-allow-methods': 'POST',
+      'access-control-allow-headers': 'Authorization, Content-Type, On-behalf-of, x-sg-elas-acl',
+      'access-control-max-age': '600',
+      'x-no-cors-reason': 'https://sendgrid.com/docs/Classroom/Basics/API/cors.html',
+      'strict-transport-security': 'max-age=600; includeSubDomains'
+    },
+    body: { errors: [Array] }
+  }
+}
+[2024-11-16T14:56:54.179] [ERROR] default - Failed to find sensors
+[2024-11-16T14:56:54.181] [ERROR] default - Sensor control with id 28-3cf104575517 failed to start with error not_found_error
+[2024-11-16T14:56:54.182] [ERROR] default - Sensor experimental with id 28-3cd8f64961fe failed to start with error not_found_error
+[2024-11-16T14:56:54.186] [INFO] default - Node.js web server at 8080 is running...
+[2024-11-16T14:56:54.203] [ERROR] default - GPIO error has occured Error: ENOENT: no such file or directory, open 'C:\proc\cpuinfo'
+[2024-11-16T14:56:54.578] [INFO] default - Ngrok started at https://9461-168-5-174-79.ngrok-free.app at port 8080
+[2024-11-16T14:56:54.579] [ERROR] default - Setup error Occured : Canceling Process (View Logs)
+[2024-11-16T14:56:54.581] [INFO] default - Attemping Safe Shutdown of components
+[2024-11-16T14:56:54.582] [ERROR] default - Heating shutdown failed with error TypeError: Cannot read properties of undefined (reading '7')
+[2024-11-16T14:56:57.207] [INFO] default - Sent Critical Error Email
+[2024-11-16T14:56:57.613] [INFO] default - Email of subject Critical Error with Experiment test2 sent
+[2024-11-16T14:58:39.468] [ERROR] default - Failed to find sensors
+[2024-11-16T14:58:39.470] [ERROR] default - Sensor control with id 28-3cf104575517 failed to start with error not_found_error
+[2024-11-16T14:58:39.470] [ERROR] default - Sensor experimental with id 28-3cd8f64961fe failed to start with error not_found_error
+[2024-11-16T14:58:39.474] [INFO] default - Node.js web server at 8080 is running...
+[2024-11-16T14:58:39.477] [ERROR] default - GPIO error has occured Error: ENOENT: no such file or directory, open 'C:\proc\cpuinfo'
+[2024-11-16T14:58:39.828] [INFO] default - Ngrok started at https://b446-168-5-174-79.ngrok-free.app at port 8080
+[2024-11-16T14:58:39.830] [ERROR] default - Setup error Occured : Canceling Process (View Logs)
+[2024-11-16T14:58:39.831] [INFO] default - Attemping Safe Shutdown of components
+[2024-11-16T14:58:39.832] [ERROR] default - Heating shutdown failed with error TypeError: Cannot read properties of undefined (reading '7')
+[2024-11-16T14:58:42.493] [INFO] default - Sent Critical Error Email
+[2024-11-16T14:58:43.020] [INFO] default - Email of subject Critical Error with Experiment test2 sent
+[2024-11-16T14:59:31.883] [ERROR] default - Failed to find sensors
+[2024-11-16T14:59:31.885] [ERROR] default - Sensor control with id 28-3cf104575517 failed to start with error not_found_error
+[2024-11-16T14:59:31.885] [ERROR] default - Sensor experimental with id 28-3cd8f64961fe failed to start with error not_found_error
+[2024-11-16T14:59:31.890] [INFO] default - Node.js web server at 8080 is running...
+[2024-11-16T14:59:31.895] [ERROR] default - GPIO error has occured Error: ENOENT: no such file or directory, open 'C:\proc\cpuinfo'
+[2024-11-16T14:59:32.510] [INFO] default - Ngrok started at https://63e6-168-5-174-79.ngrok-free.app at port 8080
+[2024-11-16T14:59:32.512] [ERROR] default - Setup error Occured : Canceling Process (View Logs)
+[2024-11-16T14:59:32.512] [INFO] default - Attemping Safe Shutdown of components
+[2024-11-16T14:59:32.513] [ERROR] default - Heating shutdown failed with error TypeError: Cannot read properties of undefined (reading '7')
+[2024-11-16T14:59:34.901] [INFO] default - Sent Critical Error Email
+[2024-11-16T14:59:35.357] [INFO] default - Email of subject Critical Error with Experiment test2 sent
+[2024-11-16T15:00:02.137] [ERROR] default - Failed to find sensors
+[2024-11-16T15:00:02.140] [ERROR] default - Sensor control with id 28-3cf104575517 failed to start with error not_found_error
+[2024-11-16T15:00:02.141] [ERROR] default - Sensor experimental with id 28-3cd8f64961fe failed to start with error not_found_error
+[2024-11-16T15:00:02.145] [INFO] default - Node.js web server at 8080 is running...
+[2024-11-16T15:00:02.157] [ERROR] default - GPIO error has occured Error: ENOENT: no such file or directory, open 'C:\proc\cpuinfo'
+[2024-11-16T15:00:03.129] [INFO] default - Ngrok started at https://e29e-168-5-174-79.ngrok-free.app at port 8080
+[2024-11-16T15:00:03.130] [ERROR] default - Setup error Occured : Canceling Process (View Logs)
+[2024-11-16T15:00:03.131] [INFO] default - Attemping Safe Shutdown of components
+[2024-11-16T15:00:03.132] [ERROR] default - Heating shutdown failed with error TypeError: Cannot read properties of undefined (reading '7')
+[2024-11-16T15:00:05.153] [INFO] default - Sent Critical Error Email
+[2024-11-16T15:00:05.590] [INFO] default - Email of subject Critical Error with Experiment test2 sent
