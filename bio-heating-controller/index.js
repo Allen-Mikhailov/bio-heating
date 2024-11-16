@@ -22,7 +22,7 @@ const EXPERIMENT_NAME = process.env.EXPERIMENT_NAME
 const READ_INTERVAL = 3 * 1000
 const PACKET_LENGTH = 10
 
-const HEATING_CONTROL_PIN = 7
+const HEATING_CONTROL_PIN = parseInt(process.env.HEATING_CONTROL_PIN)
 
 const SERVER_PORT = 8080
 
@@ -176,6 +176,11 @@ function sensor_start_failure(sensor, err)
     critical_error(`Sensor ${sensor.name} with id ${sensor.id} failed to start with error ${err}`)
 }
 
+function sensor_read_failure(sensor, err)
+{
+
+}
+
 async function sensor_setup()
 {
     try {
@@ -186,6 +191,9 @@ async function sensor_setup()
 
     control_sensor.on_start_failure = sensor_start_failure
     experimental_sensor.on_start_failure = sensor_start_failure
+
+    control_sensor.set_on_read_failure = sensor_read_failure
+    experimental_sensor.set_on_read_failure = sensor_read_failure
 
     control_sensor.start(logger)
     experimental_sensor.start(logger)
