@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 
 import { config } from 'dotenv';
 config({path: import.meta.dirname+"/.env"})
-console.log("firebase.js", import.meta.dirname+"/.env")
+console.log("firebase.js", import.meta.dirname+"/.env", path.dirname())
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
