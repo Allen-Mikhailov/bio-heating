@@ -19,8 +19,8 @@ import ActionServer from "./action_server.js";
 const CONTROL_DEVICE = "28-3cf104575517"
 const EXPERIMENTAL_DEVICE = "28-3cf8f649bf48"
 
-const CONTROL_CALLIBRATION = 2.5
-const EXPERIMENTAL_CALLIBRATION = 3
+const CONTROL_CALIBRATION = process.env.CONTROL_CALIBRATION || 0
+const EXPERIMENTAL_CALIBRATION = process.env.EXPERIMENTAL_CALIBRATION || 0
 
 const EXPERIMENT_NAME = process.env.EXPERIMENT_NAME
 const READ_INTERVAL = 3 * 1000
@@ -233,8 +233,8 @@ async function sensor_setup()
 }
 
 // Creating 
-const control_sensor = new TempSensor("control", CONTROL_DEVICE, CONTROL_CALLIBRATION)
-const experimental_sensor = new TempSensor("experimental", EXPERIMENTAL_DEVICE, EXPERIMENTAL_CALLIBRATION)
+const control_sensor = new TempSensor("control", CONTROL_DEVICE, CONTROL_CALIBRATION)
+const experimental_sensor = new TempSensor("experimental", EXPERIMENTAL_DEVICE, EXPERIMENTAL_CALIBRATION)
 
 // Reading Loop
 function update()
