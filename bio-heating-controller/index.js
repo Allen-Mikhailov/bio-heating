@@ -123,7 +123,7 @@ async function gpio_setup()
         rpio.open(HEATING_CONTROL_PIN, rpio.OUTPUT);
         logger.info("GPIO Setup Completed")
     } catch(e) {
-        critical_error(`GPIO error has occured ${err}`)
+        critical_error(`GPIO error has occured ${e}`)
         setup_error_occured = true
     }
 }
