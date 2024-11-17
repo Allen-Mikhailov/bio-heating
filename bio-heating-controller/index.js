@@ -14,6 +14,7 @@ import { TempSensor, find_sensors } from './temp_sensor.js';
 import { forward as ngforward } from "@ngrok/ngrok";
 import GPIO from 'rpi-gpio';
 import log4js from 'log4js';
+import ToggleError from "./toggle_errors.js";
 
 const CONTROL_DEVICE = "28-3cf104575517"
 const EXPERIMENTAL_DEVICE = "28-3cf8f649bf48"
