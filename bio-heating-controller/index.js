@@ -1,5 +1,6 @@
 import { config } from 'dotenv';
 config({path: import.meta.dirname+"/.env"})
+console.log("firebase.js", import.meta.dirname+"/.env", __dirname)
 
 import { Timestamp } from 'firebase/firestore';
 import { readFileSync, readdirSync } from 'fs';
