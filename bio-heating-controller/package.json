@@ -16,6 +16,7 @@
     "firebase": "^11.0.1",
     "log4js": "^6.9.1",
     "nodemailer": "^6.9.16",
-    "rpi-gpio": "^2.1.7"
+    "rpi-gpio": "^2.1.7",
+    "rpio": "^2.4.2"
   }
 }

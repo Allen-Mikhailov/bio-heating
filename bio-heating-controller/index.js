@@ -5,16 +5,16 @@ import { config } from 'dotenv';
 config({path: path.dirname(fileURLToPath(import.meta.url))+"/.env"})
 
 import { Timestamp } from 'firebase/firestore';
-import { readFileSync, readdirSync } from 'fs';
 import { db } from './firebase.js';
 import { addDoc, collection, setDoc, doc } from 'firebase/firestore';
 import sgMail from '@sendgrid/mail'
 import http from "http"
 import { TempSensor, find_sensors } from './temp_sensor.js';
 import { forward as ngforward } from "@ngrok/ngrok";
-import GPIO from 'rpi-gpio';
+import rpio from "rpio";
 import log4js from 'log4js';
 import ToggleError from "./toggle_errors.js";
+import ActionServer from "./action_server.js";
 
 const CONTROL_DEVICE = "28-3cf104575517"
 const EXPERIMENTAL_DEVICE = "28-3cf8f649bf48"
@@ -46,8 +46,10 @@ let packet_additions = 0
 let total_packets_sent = 0
 
 let error_buffer = ""
+let in_setup 
 
 let heating_mode = "automatic"
+let heating_state = "unknown"
 
 log4js.configure({
     appenders: {
@@ -59,6 +61,9 @@ log4js.configure({
     }
   });
 const logger = log4js.getLogger()
+
+const sensor_read_error = new ToggleError("sensor_read_error")
+const gpio_write_error = new ToggleError("gpio_write_error")
 
 
 function send_email(subject, text)
@@ -80,11 +85,13 @@ function send_email(subject, text)
         })
 }
 
+const critical_error_message = `Critical Error with Experiment ${EXPERIMENT_NAME}`
+
 function critical_error_messager()
 {
     if (error_buffer != "")
     {
-        send_email(`Critical Error with Experiment ${EXPERIMENT_NAME}`, error_buffer)
+        send_email(critical_error_message, error_buffer)
         error_buffer = ""
         logger.info("Sent Critical Error Email")
     }
@@ -96,23 +103,29 @@ function critical_error(error)
     logger.error(error)
 }
 
-function server_handler(req, res)
-{
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-	res.end('Congrats you have created an ngrok web server');
-}
+gpio_write_error.set_on_error((name, pin, value, e) => {
+    
+    let error = "GPIO has failed to set a pin."
+    error += " Heaing is unable to be controlled"
+    error += ` Last Known state ${heating_state}`
+    error += ` <span style="color: red">The raspberry pi has lost control</span>`
+    error += `<br>Error Message:<br>${e}`
+    send_email(critical_error_message, error)
+})
+
+gpio_write_error.on_error_always((name, pin, value, e) => {
+    logger.error("GPIO Failed to write state %s on pin %s with error %s", pin, value, e)
+})
 
 async function gpio_setup()
 {
-    GPIO.setup(HEATING_CONTROL_PIN, GPIO.DIR_OUT, (err) => {
-        if (err != undefined)
-        {
-            critical_error(`GPIO error has occured ${err}`)
-            setup_error_occured = true
-        } else {
-            logger.info("GPIO Setup Completed")
-        }
-    })
+    try {
+        rpio.open(HEATING_CONTROL_PIN, rpio.OUTPUT);
+        logger.info("GPIO Setup Completed")
+    } catch(e) {
+        critical_error(`GPIO error has occured ${err}`)
+        setup_error_occured = true
+    }
 }
 
 async function ngrok_setup()
@@ -150,12 +163,18 @@ function generate_new_packet()
     }
 }
 
+function SetHeatingRaw(value)
+{
+    rpio.write(HEATING_CONTROL_PIN, value?rpio.HIGH:rpio.LOW);
+}
+
 function SetHeating(value)
 {
     try {
-        GPIO.write(HEATING_CONTROL_PIN, value)
+        SetHeatingRaw(value)
+        heating_state = value?"on":"off"
     } catch(e) {
-        critical_error("Unable to toggle heating gpio pin")
+        gpio_write_error.refresh_error()
     }
     
 }
@@ -177,11 +196,11 @@ function HandleTempDif(dif)
     
 }
 
+const action_server = new ActionServer(logger, SERVER_PORT)
+
 async function server_setup()
 {
-    http.createServer(server_handler).listen(SERVER_PORT, () =>
-        logger.info('Node.js web server at %s is running...', SERVER_PORT)
-    );
+    await action_server.start()
 }
 
 function sensor_start_failure(sensor, err)
@@ -192,7 +211,7 @@ function sensor_start_failure(sensor, err)
 
 function sensor_read_failure(sensor, err)
 {
-
+    sensor_read_error.refresh_error(sensor, err)
 }
 
 async function sensor_setup()
@@ -278,7 +297,8 @@ async function safe_shutdown()
 
     
     try {
-        GPIO.write(HEATING_CONTROL_PIN, false)
+        SetHeatingRaw(false)
+        heating_state = "off"
         logger.info("Heating Shutdown successful")
     } catch(e) {
         critical_error(`Heating shutdown failed with error ${e}`)
@@ -287,6 +307,7 @@ async function safe_shutdown()
 
 async function start_process() 
 {
+    in_setup = true
     setTimeout(critical_error_messager, ERROR_EMAIL_BUFFER_TIME)
 
     await Promise.all([
@@ -302,6 +323,8 @@ async function start_process()
         safe_shutdown()
         return
     }
+
+    in_setup = false
 
     packet = generate_new_packet()
 

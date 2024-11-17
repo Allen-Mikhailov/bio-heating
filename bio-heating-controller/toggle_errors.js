@@ -9,6 +9,7 @@ class ToggleError
         this.name = name
         this.last_refresh = 0
         this.on_error = default_on_error
+        this.on_error_always = default_on_error
     }
 
     set_on_error(on_error)
@@ -16,12 +17,17 @@ class ToggleError
         this.on_error = on_error
     }
 
-    refresh_error()
+    set_on_error_always(on_error_always)
+    {
+        this.on_error_always = on_error_always
+    }
+
+    refresh_error(...args)
     {
         if (Date.now() - this.last_refresh > default_cooldown)
         {
             this.last_refresh = Date.now()
-            this.on_error(this.name)
+            this.on_error(this.name, ...args)
         }
     }
 }
