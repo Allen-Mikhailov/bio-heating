@@ -1,11 +1,12 @@
+import path from "path";
+import { fileURLToPath } from 'url';
+
 import { config } from 'dotenv';
-config()
+config({path: import.meta.dirname+"/.env"})
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import * as fs from "fs"
-import path from "path";
-import { fileURLToPath } from 'url';
 
 
 const firebaseConfig = {

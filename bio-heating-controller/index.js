@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-config()
+config({path: import.meta.dirname+"/.env"})
 
 import { Timestamp } from 'firebase/firestore';
 import { readFileSync, readdirSync } from 'fs';
@@ -13,7 +13,7 @@ import GPIO from 'rpi-gpio';
 import log4js from 'log4js';
 
 const CONTROL_DEVICE = "28-3cf104575517"
-const EXPERIMENTAL_DEVICE = "28-3cd8f64961fe"
+const EXPERIMENTAL_DEVICE = "28-3cf8f649bf48"
 
 const CONTROL_CALLIBRATION = 2.5
 const EXPERIMENTAL_CALLIBRATION = 3
