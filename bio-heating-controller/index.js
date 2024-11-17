@@ -1,6 +1,8 @@
+import path from "path";
+import { fileURLToPath } from 'url';
+
 import { config } from 'dotenv';
-config({path: import.meta.dirname+"/.env"})
-console.log("index.js", import.meta.dirname+"/.env")
+config({path: path.dirname(fileURLToPath(import.meta.url))+"/.env"})
 
 import { Timestamp } from 'firebase/firestore';
 import { readFileSync, readdirSync } from 'fs';

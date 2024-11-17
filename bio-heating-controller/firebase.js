@@ -1,13 +1,5 @@
-import path from "path";
-import { fileURLToPath } from 'url';
-
-import { config } from 'dotenv';
-config({path: path.dirname(fileURLToPath(import.meta.url))+"/.env"})
-console.log("firebase.js", path.dirname(fileURLToPath(import.meta.url))+"/.env")
-
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import * as fs from "fs"
 
 
 const firebaseConfig = {
