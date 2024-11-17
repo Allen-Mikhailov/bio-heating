@@ -149,6 +149,16 @@ function generate_new_packet()
     }
 }
 
+function SetHeating(value)
+{
+    try {
+        GPIO.write(HEATING_CONTROL_PIN, value)
+    } catch(e) {
+        critical_error("Unable to toggle heating gpio pin")
+    }
+    
+}
+
 function HandleTempDif(dif)
 {
     // Very simple logic
@@ -158,9 +168,9 @@ function HandleTempDif(dif)
     {
         if (dif > 2.5)
         {
-            GPIO.write(HEATING_CONTROL_PIN, false)
+            SetHeating(false)
         } else {
-            GPIO.write(HEATING_CONTROL_PIN, true)
+            SetHeating(true)
         }
     }
     
