@@ -28,6 +28,8 @@ const PACKET_LENGTH = 10
 
 const HEATING_CONTROL_PIN = parseInt(process.env.HEATING_CONTROL_PIN)
 
+const DEVICE_ID = process.env.DEVICE_ID
+
 const SERVER_PORT = 8080
 
 const EMAIL = "bioheating.rice@gmail.com"
@@ -37,7 +39,8 @@ const ERROR_EMAIL_BUFFER_TIME = 3 * 1000
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-const experiment_doc = new doc(db, "experiments", process.env.EXPERIMENT_NAME)
+const experiment_doc = new doc(db, "experiments", EXPERIMENT_NAME)
+const device_doc = new doc(db, "devices", DEVICE_ID)
 
 let setup_error_occured = false
 
@@ -64,6 +67,11 @@ const logger = log4js.getLogger()
 
 const sensor_read_error = new ToggleError("sensor_read_error")
 const gpio_write_error = new ToggleError("gpio_write_error")
+
+const action_server = new ActionServer(logger, SERVER_PORT)
+
+const control_sensor = new TempSensor("control", CONTROL_DEVICE, CONTROL_CALIBRATION)
+const experimental_sensor = new TempSensor("experimental", EXPERIMENTAL_DEVICE, EXPERIMENTAL_CALIBRATION)
 
 
 function send_email(subject, text)
@@ -133,12 +141,13 @@ async function ngrok_setup()
     // Establish connectivity
     await ngforward({ addr: SERVER_PORT, authtoken_from_env: true }).then((listener) => {
         // Push url onto database
-        const experiment_data = {
+        const device_data = {
             active_url: listener.url(),
-            is_active: true,
-            server_start: Timestamp.now()
+            experiment: EXPERIMENT_NAME,
+            server_up_time: Timestamp.now(),
+            last_activity: Timestamp.now()
         }
-        setDoc(experiment_doc, experiment_data)
+        setDoc(device_doc, device_data)
 
         logger.info("Ngrok started at %s at port %s", listener.url(), SERVER_PORT)
     }).catch((e) => {
@@ -196,7 +205,19 @@ function HandleTempDif(dif)
     
 }
 
-const action_server = new ActionServer(logger, SERVER_PORT)
+async function safe_shutdown()
+{
+    logger.info("Attemping Safe Shutdown of components")
+
+    
+    try {
+        SetHeatingRaw(false)
+        heating_state = "off"
+        logger.info("Heating Shutdown successful")
+    } catch(e) {
+        critical_error(`Heating shutdown failed with error ${e}`)
+    }
+}
 
 function shutdown_device()
 {
@@ -211,8 +232,14 @@ function shutdown_device()
     })
 }
 
-function restart_device()
+async function restart_device()
 {
+    try {
+        await safe_shutdown()
+    } catch(e) {
+
+    }
+
     exec("sudo shutdown now -r", (error, stdout, stderr) => {
         if (error) {
           logger.error(`restart_device: exec error: ${error}`);
@@ -226,16 +253,29 @@ function restart_device()
 
 function update_heating_mode()
 {
-
+    switch (heating_mode)
+    {
+        case "automatic":
+            break;
+        case "on":
+            SetHeating(true)
+            break;
+        case "off":
+            SetHeatingRaw(false)
+            break;
+    }
+    logger.info(`Heating mode updated to ${heating_mode}`)
 }
 
 function remote_set_heating_mode(data)
 {
     heating_mode = data.heating_mode
+    update_heating_mode()
 }
 
 action_server.add_action("POST", "server_restart", restart_device)
-action_server.add_action("POST", "server_shutdown", restart_device)
+action_server.add_action("POST", "server_shutdown", shutdown_device)
+action_server.add_action("POST", "set_heating_mode", remote_set_heating_mode)
 
 async function server_setup()
 {
@@ -270,10 +310,6 @@ async function sensor_setup()
     control_sensor.start(logger)
     experimental_sensor.start(logger)
 }
-
-// Creating 
-const control_sensor = new TempSensor("control", CONTROL_DEVICE, CONTROL_CALIBRATION)
-const experimental_sensor = new TempSensor("experimental", EXPERIMENTAL_DEVICE, EXPERIMENTAL_CALIBRATION)
 
 // Reading Loop
 function update()
@@ -330,20 +366,6 @@ async function main_loop()
     
 }
 
-async function safe_shutdown()
-{
-    logger.info("Attemping Safe Shutdown of components")
-
-    
-    try {
-        SetHeatingRaw(false)
-        heating_state = "off"
-        logger.info("Heating Shutdown successful")
-    } catch(e) {
-        critical_error(`Heating shutdown failed with error ${e}`)
-    }
-}
-
 async function start_process() 
 {
     in_setup = true
@@ -359,7 +381,7 @@ async function start_process()
     if (setup_error_occured)
     {
         logger.error("Setup error Occured : Canceling Process (View Logs)")
-        safe_shutdown()
+        await safe_shutdown()
         return
     }
 
