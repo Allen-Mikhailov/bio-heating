@@ -12,7 +12,7 @@ function Prototype5()
     const [experimentId, setExperimentId] = useState("")
     const [thread, setThread] = useState<[number, number, Timestamp][]>([])
 
-    const [axisData, setAxisData] = useState<number[]>([])
+    const [axisData, setAxisData] = useState<Date[]>([])
     const [controlData, setControlData] = useState<number[]>([])
     const [experimentalData, setExperimentalData] = useState<number[]>([])
 
@@ -21,7 +21,6 @@ function Prototype5()
         const thread = await request_data()
 
         const csv = "data:text/csv;charset=utf-8,"+generate_csv(thread)
-        console.log(csv)
         let encodedUri = encodeURI(csv);
         let link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -54,20 +53,21 @@ function Prototype5()
 
         setThread(new_thread)
 
-        const start_time = new_thread[0][2].toMillis()/1000
+        // const start_time = new_thread[0][2].toMillis()/1000
 
         const data_points = 10
 
         let new_control: number[] = []
         let new_experimental: number[] = []
-        let new_axis: number[] = []
+        let new_axis: Date[] = []
         for (let i = 0; i < data_points; i++)
         {
             const j = Math.floor(i/data_points * new_thread.length)
 
             new_control.push(new_thread[j][0])
             new_experimental.push(new_thread[j][1])
-            new_axis.push(new_thread[j][2].toMillis()/1000 - start_time)
+            
+            new_axis.push( (new_thread[j][2].toDate()))
         }
 
         setAxisData(new_axis)
@@ -83,7 +83,7 @@ function Prototype5()
         <button onClick={request_data}>Get Data</button><br/>
         <button onClick={download_csv}>Download Data</button><br/>
         <LineChart
-            xAxis={[{ data: axisData }]}
+            xAxis={[{ data: axisData, scaleType: "time" }]}
             series={[
                 {
                 data: controlData,

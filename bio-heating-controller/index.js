@@ -8,7 +8,7 @@ import { Timestamp } from 'firebase/firestore';
 import { db } from './firebase.js';
 import { addDoc, collection, setDoc, doc } from 'firebase/firestore';
 import sgMail from '@sendgrid/mail'
-import http from "http"
+import { exec } from "child_process";
 import { TempSensor, find_sensors } from './temp_sensor.js';
 import { forward as ngforward } from "@ngrok/ngrok";
 import rpio from "rpio";
@@ -197,6 +197,45 @@ function HandleTempDif(dif)
 }
 
 const action_server = new ActionServer(logger, SERVER_PORT)
+
+function shutdown_device()
+{
+    exec("sudo shutdown now", (error, stdout, stderr) => {
+        if (error) {
+          logger.error(`shutdown_device: exec error: ${error}`);
+          return;
+        } else {
+            logger.info("Shutdown Device Command Success")
+        }
+        logger.info(`shutdown_device: stdout: ${stdout}\nstderr: ${stderr}`);
+    })
+}
+
+function restart_device()
+{
+    exec("sudo shutdown now -r", (error, stdout, stderr) => {
+        if (error) {
+          logger.error(`restart_device: exec error: ${error}`);
+          return;
+        } else {
+            logger.info("Restart Device Command Success")
+        }
+        logger.info(`restart_device: stdout: ${stdout}\nstderr: ${stderr}`);
+    })
+}
+
+function update_heating_mode()
+{
+
+}
+
+function remote_set_heating_mode(data)
+{
+    heating_mode = data.heating_mode
+}
+
+action_server.add_action("POST", "server_restart", restart_device)
+action_server.add_action("POST", "server_shutdown", restart_device)
 
 async function server_setup()
 {
