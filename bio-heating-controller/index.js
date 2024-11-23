@@ -191,7 +191,6 @@ function SetHeating(value)
 function HandleTempDif(dif)
 {
     // Very simple logic
-    // TODO: Impliment PID
 
     if (heating_mode == "automatic")
     {
