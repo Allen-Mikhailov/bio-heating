@@ -55,7 +55,7 @@ function Prototype5()
 
         // const start_time = new_thread[0][2].toMillis()/1000
 
-        const data_points = 10
+        const data_points = 50
 
         let new_control: number[] = []
         let new_experimental: number[] = []

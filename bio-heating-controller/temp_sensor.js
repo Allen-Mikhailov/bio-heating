@@ -67,7 +67,7 @@ class TempSensor
         }
              
 
-        logger?.info("Found sensor \"%s\" with id \"%s\"", this.name, this.id)
+        logger.info("Found sensor \"%s\" with id \"%s\"", this.name, this.id)
 
         const raw_temperature = this.raw_read()
 
