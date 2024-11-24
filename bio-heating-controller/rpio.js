@@ -1,5 +1,5 @@
 import rpio from "rpio";
-rpio.init({ gpiomem: true, mapping: 'gpio' });
+rpio.init({ gpiomem: false, mapping: 'gpio' });
 
 rpio.open(11, rpio.OUTPUT, rpio.LOW);
 setInterval(() => {
