@@ -1,6 +1,6 @@
 import {spawn} from "child_process"
 
-const child = spawn('sudo node rpio.js');
+const child = spawn('sudo /home/bioheating/.nvm/versions/node/v23.3.0/bin/node  /home/bioheating/bioheating/bio-heating-controller/rpio.js');
 
 setInterval(() => {
     console.log("its probably doing something")
@@ -13,3 +13,7 @@ child.stdout.on('data', (data) => {
 child.stderr.on('data', (data) => {
 console.error(`child stderr:\n${data}`);
 });
+
+child.on("error", (e) => {
+    console.error(e)
+})
