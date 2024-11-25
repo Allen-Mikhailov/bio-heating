@@ -36,16 +36,21 @@ function default_read_failure(sensor)
 
 class TempSensor
 {
-    constructor(name, id, offset_temp)
+    constructor(name, id)
     {
         this.name = name
         this.id = id
-        this.offset_temp = offset_temp
+        this.offset_temp = 0
 
         this.temp = undefined
 
         this.on_start_failure = default_start_failure
         this.on_read_failure = default_read_failure
+    }
+
+    set_offset_temp(offset_temp)
+    {
+        this.offset_temp = offset_temp
     }
 
     set_on_start_failure(callback)
