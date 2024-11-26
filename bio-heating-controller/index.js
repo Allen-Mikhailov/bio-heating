@@ -357,7 +357,7 @@ function startup_fail(failed_actions)
      let email_block = ""
      email_block += `These actions failed: ${failed_actions.join()}<br><br>`
      email_block += `Logs<br><br>`
-     email_block += startup_memory.getBuffer().replace("\n", "<br>")
+     email_block += startup_memory.join("<br>")
 
      send_email(`FAILED startup of device ${env.DEVICE_ID}`, email_block)
      process.exitCode = 1;
