@@ -63,6 +63,11 @@ class TempSensor
         this.on_read_failure = callback
     }
 
+    calibrate(actual_temp)
+    {
+        this.offset_temp = actual_temp - this.raw_read()
+    }
+
     start(logger)
     {
         if (valid_dirents[this.id] == undefined)
