@@ -2,8 +2,9 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import { readFileSync, writeFileSync } from "fs";
 
-import { parse } from 'dotenv';
+import { parse, config } from 'dotenv';
 const env_path = path.dirname(fileURLToPath(import.meta.url))+"/.env"
+config({path: env_path})
 
 function get_env()
 {
