@@ -24,6 +24,12 @@ control_sensor.set_offset_temp(parseFloat(env.CONTROL_CALIBRATION))
 const experimental_sensor = new TempSensor("experimental", env.EXPERIMENTAL_DEVICE)
 experimental_sensor.set_offset_temp(parseFloat(env.EXPERIMENTAL_CALIBRATION))
 
+// Will probably have an varying amount sensors in the future
+const sensors = [
+    control_sensor,
+    experimental_sensor
+]
+
 const sensor_read_error = new ToggleError("sensor_read_error")
 const gpio_write_error = new ToggleError("gpio_write_error")
 
@@ -39,6 +45,8 @@ let total_packets_sent = 0
 
 let heating_mode = "automatic"
 let heating_on = "unknown"
+
+let critical_error_buffer = ""
 
 function send_email(subject, text)
 {
@@ -148,12 +156,6 @@ async function sensor_setup()
         return false
     }
 
-    // Will probably have an varying amount sensors in the future
-    const sensors = [
-        control_sensor,
-        experimental_sensor
-    ]
-
     let failed_sensors = []
     function sensor_start_failure(sensor)
     {
@@ -226,11 +228,37 @@ async function get_ip_address() {
     }
 }
 
+const critical_error_message = () => `Critical Error with Device ${env.DEVICE_ID}`
+
 startup_process.add_action("server_start", server_start)
 startup_process.add_action("senser_setup", sensor_setup)
 startup_process.add_action("gpio_setup", gpio_setup)
 startup_process.add_action("ngrok_setup", ngrok_setup)
 startup_process.add_action("get_ip_address", get_ip_address)
+
+// errors
+const sensor_error_str = (s) => `Sensor ${s.name} with id ${s.id} is unable to read temperature`
+sensor_read_error.on_error_always = (sensor) => {
+    logger.error(sensor_error_str(sensor))
+}
+
+sensor_read_error.on_error = (sensor) => {
+    send_email(critical_error_message(), sensor_error_str(sensor))
+}
+
+gpio_write_error.set_on_error((name, pin, value, e) => {
+    
+    let error = "GPIO has failed to set a pin."
+    error += " Heaing is unable to be controlled"
+    error += ` Last Known state ${heating_on?"on":"off"}`
+    error += ` <span style="color: red">The raspberry pi has lost control</span>`
+    error += `<br>Error Message:<br>${e}`
+    send_email(critical_error_message(), error)
+})
+
+gpio_write_error.on_error_always((name, pin, value, e) => {
+    logger.error("GPIO Failed to write state %s on pin %s with error %s", pin, value, e)
+})
 
 function generate_new_packet()
 {
@@ -245,6 +273,8 @@ function generate_new_packet()
 const experiment_packet_collection = collection(db, "experiment_data")
 function device_tick()
 {
+    if (!experiment_running) {return;}
+
     // Reading Sensors
     const control_temp = control_sensor.read()
     const experimental_temp = experimental_sensor.read()
@@ -252,6 +282,7 @@ function device_tick()
     if (control_temp == -1 || experimental_temp == -1)
     {   
         // Errored read
+        SetHeating(false)
     } else {
         // Successful read
         const dif = experimental_temp - control_temp
@@ -302,6 +333,7 @@ async function main_loop()
 
 function write_device_success()
 {
+    const device_doc = doc(db, "experiments", env.DEVICE_ID)
     const device_data = {
         active_url: active_url,
         ip_address: device_ip,
@@ -336,6 +368,8 @@ async function start_device() {
     } catch(e) {
         startup_fail(["write_device_opening_to_firebase"])
     }
+
+    send_email("Device Online", `The Device "${env.DEVICE_ID}" is online and running smoothly`)
 
     await main_loop()
 }
