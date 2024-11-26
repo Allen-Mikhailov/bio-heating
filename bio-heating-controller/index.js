@@ -52,8 +52,8 @@ function send_email(subject, text)
     text += `\nSent at ${new Date().toString()}`
     const on_email_sent = () => logger.info('Email of subject %s sent', subject)
     const msg = {
-        to: EMAIL_TARGET,
-        from: EMAIL,
+        to: env.EMAIL_TARGET,
+        from: env.EMAIL,
         subject: subject,
         text: text,
         html: text
