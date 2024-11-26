@@ -10,8 +10,8 @@ log4js.configure({
     },
     categories: {
       default: { appenders: ['console', 'file'], level: 'debug' },
-      startup: { appenders: ['console', "startup_file", "startup_memory"]},
-      server: { appenders: ['console', 'file'], level: 'debug' },
+      startup: { appenders: ['console', "startup_file", "startup_memory"], level: 'debug'},
+      server: { appenders: ['console', 'file', "server_file"], level: 'debug' },
     }
   });
 const logger = log4js.getLogger()
