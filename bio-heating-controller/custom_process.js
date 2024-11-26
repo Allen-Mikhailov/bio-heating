@@ -68,7 +68,7 @@ class CustomProcess
             if (this.logger)
             {
                 const failed_string = failed_actions.toString().substring(1, -1)
-                this.logger.error(`Process ${this.process_name} failed with actions ${failed_string} failing`)
+                this.logger.error(`Process ${this.process_name} failed with actions ${failed_string} `)
             }
                 
             return [false, failed_actions]

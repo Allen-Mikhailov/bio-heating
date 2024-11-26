@@ -58,7 +58,7 @@ function send_email(subject, text)
         text: text,
         html: text
     }
-    sgMail.send(msg).then(on_email_sent).catch(logger.error)
+    sgMail.send(msg).then(on_email_sent).catch(logger.error.bind(logger))
 }
 
 function sleep(ms) {
