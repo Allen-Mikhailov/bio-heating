@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs';
 import { get_env, write_env } from './env_handler.js';
 let env = get_env()
 
@@ -6,7 +5,7 @@ import { db } from './firebase.js';
 import { addDoc, collection, setDoc, doc, Timestamp } from 'firebase/firestore';
 import sgMail from '@sendgrid/mail'
 import { exec } from "child_process";
-import { logger, startup_logger, startup_memory} from './logger.js';
+import { logger, server_logger, startup_logger, startup_memory} from './logger.js';
 import ActionServer from './action_server.js';
 import { TempSensor, find_sensors } from './temp_sensor.js';
 import { forward as ngforward } from "@ngrok/ngrok";
@@ -100,9 +99,8 @@ function update_heating_mode(new_mode)
 
 function update_env_property(property, value)
 {
-    const env_object = JSON.parse(JSON.stringify(env))
-    env_object[property] = value
-    write_env()
+    env[property] = value
+    write_env(env)
 }
 
 const service_update = () => exec("git pull origin master ; sudo systemctl restart bioheating-app")
@@ -112,13 +110,22 @@ const server_shutdown = () => exec("sudo shutdown now")
 
 const change_heating_mode = ({mode}) => update_heating_mode(mode)
 const change_experiment_name = ({name}) => update_env_property("EXPERIMENT_NAME", name)
-const change_control_calibration = ({temp}) => control_sensor.calibrate(temp)
-const change_experimental_calibration = ({temp}) => experimental_sensor.calibrate(temp)
+
+const change_control_calibration = ({temp}) => {
+    control_sensor.calibrate(temp)
+    update_env_property("CONTROL_CALIBRATION", control_sensor.offset_temp)
+}
+
+const change_experimental_calibration = ({temp}) => {
+    experimental_sensor.calibrate(temp)
+    update_env_property("EXPERIMENTAL_CALIBRATION", experimental_sensor.offset_temp)
+}
+
 const start_experiment = () => {experiment_running = true; logger.info("Experiment Started")}
 const stop_experiment = () => {experiment_running = false; logger.info("Experiment Stopped")}
 
 // Server Setup
-const server = new ActionServer(logger, env.SERVER_PORT)
+const server = new ActionServer(server_logger, env.SERVER_PORT)
 
 server.add_action("POST", "service_update", service_update)
 server.add_action("POST", "service_update", service_update)
