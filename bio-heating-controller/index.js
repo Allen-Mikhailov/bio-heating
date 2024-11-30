@@ -7,7 +7,7 @@ import sgMail from '@sendgrid/mail'
 import { exec } from "child_process";
 import { logger, server_logger, startup_logger, startup_memory} from './logger.js';
 import ActionServer from './action_server.js';
-import { TempSensor, find_sensors } from './temp_sensor.js';
+import { start_service as start_sensor_service, sensors } from './temp_sensor.js';
 import { forward as ngforward } from "@ngrok/ngrok";
 import rpio from "rpio";
 import ToggleError from "./toggle_errors.js";
@@ -15,19 +15,6 @@ import CustomProcess from "./custom_process.js";
 
 const startup_process = new CustomProcess("Startup")
 startup_process.set_logger(startup_logger)
-
-// Sensors
-const control_sensor = new TempSensor("control", env.CONTROL_DEVICE)
-control_sensor.set_offset_temp(parseFloat(env.CONTROL_CALIBRATION))
-
-const experimental_sensor = new TempSensor("experimental", env.EXPERIMENTAL_DEVICE)
-experimental_sensor.set_offset_temp(parseFloat(env.EXPERIMENTAL_CALIBRATION))
-
-// Will probably have an varying amount sensors in the future
-const sensors = [
-    control_sensor,
-    experimental_sensor
-]
 
 const sensor_read_error = new ToggleError("sensor_read_error")
 const gpio_write_error = new ToggleError("gpio_write_error")
@@ -44,8 +31,6 @@ let total_packets_sent = 0
 
 let heating_mode = "automatic"
 let heating_on = "unknown"
-
-let critical_error_buffer = ""
 
 function send_email(subject, text)
 {
@@ -152,39 +137,16 @@ async function server_start()
 }
 
 const sensor_failure = (sensor) => sensor_read_error.refresh_error(sensor)
-
-async function sensor_setup() 
+async function sensor_setup()
 {
-    try {
-        find_sensors(logger)
-        
-    } catch(e) {
-        logger.error("Failed to find sensors on device")
-        return false
-    }
+    const success = await start_sensor_service()
+    if (!success) {return false}
 
-    let failed_sensors = []
-    function sensor_start_failure(sensor)
-    {
-        failed_sensors.push(sensor)
-        logger.info(`Sensor ${sensor.name} with id ${sensor.id} failed to start with error ${err}`)
-    }
-    
-    for (let i = 0; i < sensors.length; i++)
-    {
-        const sensor = sensors[i]
-        sensor.on_start_failure = sensor_start_failure
+    Object.keys(sensors).map(sensor_name => {
+        const sensor = sensors[sensor_name]
         sensor.on_read_failure = sensor_failure
-        sensor.start(logger)
-    }
-
-    if (failed_sensors.length !== 0)
-    {
-        logger.error(`Sensor start has failed with sensors ${failed_sensors.map(sensor => sensor.name).join()}`)
-        return false
-    }
-
-    logger.info("All Sensors started successfully")
+    })
+    logger.info("Sensor setup Completed")
     return true
 }
 
@@ -297,7 +259,7 @@ function device_tick()
         if (heating_mode == "automatic")
         {
             // Simple heating logic
-            SetHeating(dif > 2.5)
+            SetHeating(dif < 2.5)
         }
 
         // Logging
