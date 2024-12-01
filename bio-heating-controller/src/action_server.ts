@@ -1,4 +1,5 @@
 import http from "http"
+import { Logger } from "log4js"
 import { format } from "util"
 
 const ERROR_HEADING = "ACTION_SERVER_ERROR: "
@@ -9,7 +10,12 @@ const POST_NO_VALID_ACTION_ERROR = ERROR_HEADING+"Post request no action found f
 
 class ActionServer
 {
-    constructor(logger, port)
+    port: number;
+    logger: Logger;
+    get_actions: {[key: string]: (data: any) => void}
+    post_actions: {[key: string]: (data: any) => void}
+
+    constructor(logger: Logger, port: number)
     {
         this.port = port
         this.logger = logger
@@ -17,7 +23,7 @@ class ActionServer
         this.post_actions = {}
     }
 
-    post_request(req, res)
+    post_request(req: http.IncomingMessage, res: http.ServerResponse)
     {
         let body = ""
         req.on("data", (chunk) => {
@@ -25,7 +31,7 @@ class ActionServer
         })
 
         req.on("end", () => {
-            let data
+            let data: any
 
             try {
                 data = JSON.parse(body)
@@ -62,7 +68,7 @@ class ActionServer
             
         })
 
-        const promise = new Promise((resolve, reject) => {
+        const promise = new Promise<void>((resolve, reject) => {
             server.listen(this.port, () => {
                 resolve()
             })
@@ -72,7 +78,7 @@ class ActionServer
         
     }
 
-    add_action(type, name, callback)
+    add_action(type: string, name: string, callback: (data: any) => void)
     {
         if (type == "GET")
         {

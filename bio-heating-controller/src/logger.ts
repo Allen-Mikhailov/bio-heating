@@ -1,6 +1,6 @@
 import log4js from 'log4js';
 
-const startup_memory = []
+const startup_memory: string[] = []
 
 log4js.configure({
     appenders: {

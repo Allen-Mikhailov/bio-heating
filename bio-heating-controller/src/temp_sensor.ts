@@ -1,4 +1,5 @@
-import { readFileSync, readdirSync } from 'fs';
+import { Dirent, readFileSync, readdirSync } from 'fs';
+import { Logger } from 'log4js';
 import path from "path";
 import { fileURLToPath } from 'url';
 
@@ -7,47 +8,60 @@ const SENSOR_CONFIG_PATH = path.dirname(fileURLToPath(import.meta.url))+"/config
 
 const ERROR_TEMPERATURES = [0, 85] // If sensor outputs this temperature it has failed
 
-let valid_dirents = {}
-let sensor_config = {}
-let sensors = {}
+interface SensorConfig {
+    [name: string]: {
+        id: string,
+        calibration: number,
+        optional: boolean
+    }
+}
 
-function is_error_temp(temp)
+let valid_dirents: {[key: string]: Dirent} = {}
+let sensor_config: SensorConfig = {}
+let sensors: {[key: string]: TempSensor} = {}
+
+function is_error_temp(temp: number)
 {
     return ERROR_TEMPERATURES.indexOf(temp) != -1
 }
 
-const default_start_failure = (sensor) => {}
-const default_read_failure = (sensor) => {}
+const default_start_failure = (sensor: TempSensor) => {}
+const default_read_failure = (sensor: TempSensor) => {}
 
 class TempSensor
 {
-    constructor(name, id)
+    name: string;
+    id: string;
+    offset_temp: number;
+    temp: number;
+    on_read_failure: (sensor: TempSensor) => void
+    constructor(name: string, id: string)
     {
         this.name = name
         this.id = id
         this.offset_temp = 0
 
-        this.temp = undefined
+        this.temp = 0
 
         this.on_read_failure = default_read_failure
     }
 
-    set_offset_temp(offset_temp)
+    set_offset_temp(offset_temp: number)
     {
         this.offset_temp = offset_temp
     }
 
-    set_on_read_failure(callback)
+    set_on_read_failure(callback: (sensor: TempSensor) => void)
     {
         this.on_read_failure = callback
     }
 
-    calibrate(actual_temp)
+    calibrate(actual_temp: number)
     {
         this.offset_temp = actual_temp - this.raw_read()
     }
 
-    start(logger)
+    start(logger: Logger)
     {
         if (valid_dirents[this.id] == undefined)
         {
@@ -92,7 +106,7 @@ class TempSensor
     }
 }
 
-async function start_service(logger)
+async function start_service(logger: Logger)
 {
     logger.info("Finding Sensors")
     const files = readdirSync(DEVICES_PATH, { withFileTypes: true })
@@ -128,8 +142,8 @@ async function start_service(logger)
     {
         const name = sensor_names[i]
         const config_setting = sensor_config[name]
-        const sensor = new TempSensor(name, config_setting.is)
-        sensor.offset_temp(config_setting.calibration)
+        const sensor = new TempSensor(name, config_setting.id)
+        sensor.calibrate(config_setting.calibration)
         
         try {
             const [success, error] = sensor.start(logger)

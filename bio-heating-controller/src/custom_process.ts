@@ -1,6 +1,14 @@
+import { Logger } from "log4js";
+
 class CustomProcess
 {
-    constructor(process_name)
+    process_name: string;
+    error: () => void;
+    final_error: () => void; // unused rn
+    actions: {[key: string]: () => Promise<boolean>};
+    logger: Logger | undefined;
+
+    constructor(process_name: string)
     {
         this.process_name = process_name
         this.error = () => {}
@@ -9,48 +17,48 @@ class CustomProcess
         this.logger = undefined
     }
 
-    set_logger(logger)
+    set_logger(logger: Logger)
     {
         this.logger = logger
     }
 
-    add_action(action_name, action)
+    add_action(action_name: string, action: () => Promise<boolean>)
     {
         // returns success true/false
         this.actions[action_name] = action
     }
 
-    on_error(error)
+    on_error(error: () => {})
     {
         this.error = error
     }
 
-    on_final_error(final_error)
+    on_final_error(final_error: () => {})
     {
         this.final_error = final_error
     }
 
-    async start()
+    async start(): Promise<[boolean, string[]]>
     {
         // Setting up all actions
-        const calls = []
+        const calls: Promise<boolean>[] = []
         const action_keys = Object.keys(this.actions)
         for (let i = 0; i < action_keys.length; i++)
         {
             const action_name = action_keys[i]
             const action = this.actions[action_name]
-            calls.push(action)
+            calls.push(action())
         }
 
         // Running all Actions
-        const results = await Promise.all(calls)
+        const results: boolean[] = await Promise.all(calls).then()
 
         // Looking at results
         let success = true
-        let failed_actions = []
-        results.map(i => {
+        let failed_actions: string[] = []
+        results.map((success, i) => {
             const action_name = action_keys[i]
-            if (results[action_name] !== true)
+            if (success !== true)
             {
                 success = false
                 failed_actions.push(action_name)
