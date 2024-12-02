@@ -5,9 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <App />
-    </LocalizationProvider>
-  </StrictMode>,
+  <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <App />
+  </LocalizationProvider>
 )
