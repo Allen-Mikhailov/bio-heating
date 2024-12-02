@@ -2,7 +2,7 @@ import { env, write_env } from './env_handler.js';
 
 import { db } from './firebase.js';
 import { addDoc, collection, setDoc, doc, Timestamp } from 'firebase/firestore';
-import {send_email} from './email.js';
+import {send_email, email_setup} from './email.js';
 import { exec } from "child_process";
 import { logger, server_logger, startup_logger, startup_memory} from './logger.js';
 import ActionServer from './action_server.js';
@@ -141,8 +141,9 @@ async function get_ip_address() {
 startup_process.add_action("server_start", server_start)
 startup_process.add_action("senser_setup", sensor_setup)
 startup_process.add_action("gpio_setup", gpio_setup)
-// startup_process.add_action("ngrok_setup", ngrok_setup)
+startup_process.add_action("ngrok_setup", ngrok_setup)
 startup_process.add_action("get_ip_address", get_ip_address)
+startup_process.add_action("email_setup", email_setup)
 
 function write_device_success()
 {
