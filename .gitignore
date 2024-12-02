@@ -3,4 +3,5 @@ node_modules/
 application.log
 .VSCodeCounter
 experiment_configs/
+sensor_config.json
 dist/

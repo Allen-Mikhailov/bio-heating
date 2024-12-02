@@ -8,7 +8,7 @@ import { logger } from './logger.js';
 import { env } from './env_handler.js';
 
 const DEVICES_PATH = "/sys/bus/w1/devices/w1_bus_master1/"
-const SENSOR_CONFIG_PATH = path.dirname(fileURLToPath(import.meta.url))+"/../config.json"
+const SENSOR_CONFIG_PATH = path.dirname(fileURLToPath(import.meta.url))+"/../sensor_config.json"
 
 const ERROR_TEMPERATURES = [0, 85] // If sensor outputs this temperature it has failed
 
