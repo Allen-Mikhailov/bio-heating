@@ -63,7 +63,7 @@ class ActionServer
     async start()
     {   
         const server = http.createServer((req, res) => {
-            res.setHeader('Access-Control-Allow-Origin', `http://localhost:${this.port}`); // Allow your frontend
+            res.setHeader('Access-Control-Allow-Origin', `*`); // Allow your frontend
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); // Allow specific methods
             res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Allow specific headers
             if (req.method == "POST")
