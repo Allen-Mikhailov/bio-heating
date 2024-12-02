@@ -18,6 +18,7 @@ function send_email(subject: string, text: string)
 
 async function email_setup() 
 {
+    logger.info(`Setting sendgrid api key to ${env.SENDGRID_API_KEY}`)
     sgMail.setApiKey(env.SENDGRID_API_KEY)
 }
 
