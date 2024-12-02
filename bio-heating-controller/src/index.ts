@@ -109,7 +109,7 @@ async function ngrok_setup()
     const ngrok_config = { 
         addr: env.SERVER_PORT, 
         authtoken_from_env: true, 
-        headers: { 'Access-Control-Allow-Origin': 'http://localhost:5173' } 
+        headers: { 'Access-Control-Allow-Origin': `http://localhost:${env.SERVER_PORT}` } 
     }
     await ngforward(ngrok_config).then((listener) => {
         // Push url onto database
