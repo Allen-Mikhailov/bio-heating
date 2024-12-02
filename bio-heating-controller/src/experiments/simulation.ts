@@ -1,15 +1,11 @@
 import { collection } from "firebase/firestore";
-import Experiment, { sensor_config } from "../../experiment.js";
-import { env } from "../../env_handler.js";
-import { db } from "../../firebase.js";
-import { logger } from "../../logger.js";
-import { set_heating } from "../../gpio_handler.js";
+import Experiment, { sensor_config } from "../experiment.js";
+import { env } from "../env_handler.js";
+import { db } from "../firebase.js";
+import { logger } from "../logger.js";
+import { set_heating } from "../gpio_handler.js";
 import { Logger } from "log4js";
 import { Timestamp, addDoc } from "firebase/firestore";
-import path from "path";
-import { fileURLToPath } from 'url';
-
-const dir = path.dirname(fileURLToPath(import.meta.url))+"/sensor_config.json"
 
 interface simulation_packet {
     experiment_id: string;
@@ -127,10 +123,6 @@ class SimulationExperiment extends Experiment
     {
         if (this.stop_resolve != null)
             this.stop_resolve(0) // I am not sure what to pass to so I put 0
-    }
-
-    get_config_path(): string {
-        return dir
     }
 }
 

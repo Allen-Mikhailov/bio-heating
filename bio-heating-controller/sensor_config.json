@@ -1,0 +1,12 @@
+{
+    "control": {
+        "id": "28-3cf104575517",
+        "calibration": 0.0,
+        "optional": false
+    },
+    "experimental": {
+        "id": "28-3cf8f649bf48",
+        "calibration": 0.0,
+        "optional": true
+    }
+}

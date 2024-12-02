@@ -1,6 +1,8 @@
 import { Logger } from "log4js"
 import { sensors, TempSensor } from "./temp_sensor.js"
 import { readFileSync }from "fs"
+import path from "path";
+import { fileURLToPath } from 'url';
 
 interface ExperimentSensorConfig {
     [experiment_sensor_name: string]: string
@@ -89,7 +91,7 @@ class Experiment
 
     get_config_path(): string
     {
-        return "" // Will need to be defined
+        return path.dirname(fileURLToPath(import.meta.url))+`/../experiment_configs/${this.name}_sensor_config.json`
     }
 }
 
