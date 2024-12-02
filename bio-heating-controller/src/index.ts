@@ -49,7 +49,8 @@ const start_experiment = ({new_experiment_type}: {new_experiment_type: string}) 
         return
     }
     experiment_type = new_experiment_type
-    experiment_obj = new experiments[new_experiment_type](logger, )
+    experiment_obj = new experiments[new_experiment_type](logger)
+    experiment_obj?.start()
     
     logger.info("Experiment Started")
 }
