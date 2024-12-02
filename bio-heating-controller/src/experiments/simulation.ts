@@ -40,6 +40,7 @@ class SimulationExperiment extends Experiment
     packet: simulation_packet
     packet_additions: number = 0
     total_packets_sent: number = 0
+    running = false;
     promise: Promise<void>|undefined;
     stop_resolve: ((value: unknown) => void) | null = null;
     constructor(logger: Logger)
@@ -110,10 +111,13 @@ class SimulationExperiment extends Experiment
             this.stop_resolve = resolve
             while (true)
             {
+                if (!this.running) {break;}
                 this.tick()
                 await sleep(parseFloat(env.READ_INTERVAL))
             }
         })
+
+        this.running = true
 
         
         return true
@@ -122,7 +126,11 @@ class SimulationExperiment extends Experiment
     stop()
     {
         if (this.stop_resolve != null)
+        {
+            this.running = false
             this.stop_resolve(0) // I am not sure what to pass to so I put 0
+        }
+            
     }
 }
 
