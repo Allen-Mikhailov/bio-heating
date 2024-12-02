@@ -10,6 +10,7 @@ import Prototype2 from './pages/Prototype2.tsx'
 import Prototype3 from './pages/Prototype3.tsx'
 import Prototype4 from './pages/Prototype4.tsx'
 import Prototype5 from './pages/Prototype5.tsx';
+import Prototype6 from './pages/Prototype6.tsx';
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -24,6 +25,7 @@ function App() {
           <Route path="/prototype3" element={<Prototype3/>} />
           <Route path="/prototype4" element={<Prototype4/>} />
           <Route path="/prototype5" element={<Prototype5/>} />
+          <Route path="/prototype6" element={<Prototype6/>} />
           </Routes>
           <div><Link to={"/prototypes"}>Prototypes</Link></div>
       </LocalizationProvider>

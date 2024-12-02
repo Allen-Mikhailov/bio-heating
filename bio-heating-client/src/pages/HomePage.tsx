@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom"
 
-import Prototype5 from "./Prototype5"
+import Prototype6 from "./Prototype6"
 
 function HomePage()
 {
     return <div>
-        <Prototype5/>
+        <Prototype6/>
     </div>
 }
 

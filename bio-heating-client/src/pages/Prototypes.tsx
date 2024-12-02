@@ -8,6 +8,7 @@ function Prototypes()
         <div><Link to={"/prototype3"}>Prototype 3</Link></div>
         <div><Link to={"/prototype4"}>Prototype 4</Link></div>
         <div><Link to={"/prototype5"}>Prototype 5</Link></div>
+        <div><Link to={"/prototype6"}>Prototype 6</Link></div>
     </div>
 }
 
