@@ -92,6 +92,12 @@ function Prototype6()
         post_to_device({action: "start_experiment", new_experiment_type: experimentType})
         console.log("posted")
     }
+
+    function stop_experiment()
+    {
+        post_to_device({action: "stop_experiment"})
+        console.log("posted")
+    }
     
     return <div style={{display: "flex"}}>
         <div id="devices-list">
@@ -121,7 +127,10 @@ function Prototype6()
         <div id="device-controls">
             <div><b>Controls:</b></div>
             <button onClick={start_experiment}>Start Experiment</button><div/>
-            <button>Stop Experiment</button>
+            <button onClick={stop_experiment}>Stop Experiment</button>
+        </div>
+        <div id="device-data">
+
         </div>
         </>}
     </div>
