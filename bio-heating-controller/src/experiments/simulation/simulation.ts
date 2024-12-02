@@ -1,9 +1,9 @@
 import { collection } from "firebase/firestore";
-import Experiment, { sensor_config } from "../../experiment";
-import { env } from "../../env_handler";
-import { db } from "../../firebase";
-import { logger } from "../../logger";
-import { set_heating } from "../../gpio_handler";
+import Experiment, { sensor_config } from "../../experiment.js";
+import { env } from "../../env_handler.js";
+import { db } from "../../firebase.js";
+import { logger } from "../../logger.js";
+import { set_heating } from "../../gpio_handler.js";
 import { Logger } from "log4js";
 import { Timestamp, addDoc } from "firebase/firestore";
 import path from "path";
