@@ -1,4 +1,4 @@
-import { Dirent, readFileSync, readdirSync } from 'fs';
+import { Dirent, readFileSync, readdirSync, writeFileSync } from 'fs';
 import { Logger } from 'log4js';
 import path from "path";
 import { fileURLToPath } from 'url';
@@ -65,9 +65,14 @@ class TempSensor
         this.on_read_failure = default_read_failure
     }
 
+    // Edits config
     set_offset_temp(offset_temp: number)
     {
         this.offset_temp = offset_temp
+        const sensor_config_str = readFileSync(SENSOR_CONFIG_PATH).toString()
+        const sensor_config = JSON.parse(sensor_config_str)
+        sensor_config[this.name].calibration = offset_temp
+        writeFileSync(SENSOR_CONFIG_PATH, JSON.stringify(sensor_config, null, 4))
     }
 
     set_on_read_failure(callback: (sensor: TempSensor) => void)
@@ -77,7 +82,7 @@ class TempSensor
 
     calibrate(actual_temp: number)
     {
-        this.offset_temp = actual_temp - this.raw_read()
+        this.set_offset_temp(actual_temp - this.raw_read())
     }
 
     start(logger: Logger)
@@ -162,7 +167,7 @@ async function start_service(logger: Logger)
         const name = sensor_names[i]
         const config_setting = sensor_config[name]
         const sensor = new TempSensor(name, config_setting.id)
-        sensor.set_offset_temp(config_setting.calibration)
+        sensor.offset_temp = config_setting.calibration
         
         try {
             const [success, error] = sensor.start(logger)
