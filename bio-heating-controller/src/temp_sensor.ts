@@ -162,7 +162,7 @@ async function start_service(logger: Logger)
         const name = sensor_names[i]
         const config_setting = sensor_config[name]
         const sensor = new TempSensor(name, config_setting.id)
-        sensor.calibrate(config_setting.calibration)
+        sensor.set_offset_temp(config_setting.calibration)
         
         try {
             const [success, error] = sensor.start(logger)
