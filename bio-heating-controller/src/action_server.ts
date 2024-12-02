@@ -68,7 +68,15 @@ class ActionServer
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); // Allow specific methods
             res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Allow specific headers
             this.logger.info(`Recieved a request with method ${req.method}`)
-            if (req.method == "POST" || req.method == "OPTIONS")
+
+            if (req.method === 'OPTIONS') {
+                // CORS headers
+                res.writeHead(204); // No content
+                res.end();
+                return;
+              }
+
+            if (req.method == "POST")
                 return this.post_request(req, res)
             else if (req.method == "GET")
                 return this.get_request(req, res)

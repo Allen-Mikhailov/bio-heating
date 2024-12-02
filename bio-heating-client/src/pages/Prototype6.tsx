@@ -44,7 +44,7 @@ function Prototype6()
             method: "POST",
             body: JSON.stringify(data),
             headers: {
-              "Content-type": "application/json; charset=UTF-8"
+              "Content-Type": "application/json"
             }
           });
     }
