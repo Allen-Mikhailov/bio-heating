@@ -1,5 +1,5 @@
 import { Logger } from "log4js"
-import { sensors, TempSensor } from "./temp_sensor"
+import { sensors, TempSensor } from "./temp_sensor.js"
 import { readFileSync }from "fs"
 
 interface ExperimentSensorConfig {

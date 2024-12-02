@@ -1,8 +1,8 @@
 import rpio from "rpio";
-import { env } from "./env_handler";
-import ToggleError from "./toggle_errors";
-import { send_email } from "./email";
-import { logger } from "./logger";
+import { env } from "./env_handler.js";
+import ToggleError from "./toggle_errors.js";
+import { send_email } from "./email.js";
+import { logger } from "./logger.js";
 
 const gpio_write_error = new ToggleError("gpio_write_error")
 

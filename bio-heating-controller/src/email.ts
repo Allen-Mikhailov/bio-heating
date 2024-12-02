@@ -1,6 +1,6 @@
 import sgMail from '@sendgrid/mail'
-import { logger } from './logger'
-import { env } from './env_handler'
+import { logger } from './logger.js'
+import { env } from './env_handler.js'
 
 function send_email(subject: string, text: string)
 {

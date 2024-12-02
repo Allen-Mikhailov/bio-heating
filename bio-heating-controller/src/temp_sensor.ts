@@ -2,10 +2,10 @@ import { Dirent, readFileSync, readdirSync } from 'fs';
 import { Logger } from 'log4js';
 import path from "path";
 import { fileURLToPath } from 'url';
-import { send_email } from './email';
-import ToggleError from './toggle_errors';
-import { logger } from './logger';
-import { env } from './env_handler';
+import { send_email } from './email.js';
+import ToggleError from './toggle_errors.js';
+import { logger } from './logger.js';
+import { env } from './env_handler.js';
 
 const DEVICES_PATH = "/sys/bus/w1/devices/w1_bus_master1/"
 const SENSOR_CONFIG_PATH = path.dirname(fileURLToPath(import.meta.url))+"/config.json"

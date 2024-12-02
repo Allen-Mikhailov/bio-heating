@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { env } from "./env_handler";
+import { env } from "./env_handler.js";
 
 const firebaseConfig = {
   apiKey: "firebase_api_key",
