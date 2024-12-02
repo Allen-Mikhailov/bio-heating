@@ -147,7 +147,7 @@ startup_process.add_action("email_setup", email_setup)
 
 function write_device_success()
 {
-    const device_doc = doc(db, "experiments", env.DEVICE_ID)
+    const device_doc = doc(db, "devices", env.DEVICE_ID)
     const device_data = {
         active_url: active_url,
         ip_address: device_ip,

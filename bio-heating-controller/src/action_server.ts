@@ -56,6 +56,8 @@ class ActionServer
     get_request(req: http.IncomingMessage, res: http.ServerResponse)
     {
         // Will do this later
+        res.write('Hello World!'); //write a response to the client
+        res.end();
     }
 
     async start()
