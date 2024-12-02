@@ -49,6 +49,7 @@ class ActionServer
             if (this.post_actions[data.action] == undefined)
                 return this.logger.warn(format(POST_NO_VALID_ACTION_ERROR, data.action, body))
 
+            this.logger.info(`Began action ${data.action} on request`)
             this.post_actions[data.action](data)
         })
     }
@@ -66,6 +67,7 @@ class ActionServer
             res.setHeader('Access-Control-Allow-Origin', `*`); // Allow your frontend
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); // Allow specific methods
             res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Allow specific headers
+            this.logger.info(`Recieved a request with method ${req.method}`)
             if (req.method == "POST")
                 return this.post_request(req, res)
             else if (req.method == "GET")
