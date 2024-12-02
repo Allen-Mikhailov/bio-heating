@@ -53,7 +53,7 @@ class ActionServer
         })
     }
 
-    get_request(req, res)
+    get_request(req: http.IncomingMessage, res: http.ServerResponse)
     {
         // Will do this later
     }

@@ -8,21 +8,21 @@ import { logger, server_logger, startup_logger, startup_memory} from './logger.j
 import ActionServer from './action_server.js';
 import { start_service as start_sensor_service, sensors } from './temp_sensor.js';
 import { forward as ngforward } from "@ngrok/ngrok";
-import { gpio_setup } from './gpio_handler.js';
-import ToggleError from "./toggle_errors.js";
+import { gpio_setup, set_heating } from './gpio_handler.js';
 import CustomProcess from "./custom_process.js";
-import { TempSensor } from './temp_sensor.js';
+import experiments from './all_experiments.js';
+import Experiment from './experiment.js';
 
 const startup_process = new CustomProcess("Startup")
 startup_process.set_logger(startup_logger)
-
-const sensor_read_error = new ToggleError("sensor_read_error")
 
 let active_url: string | undefined
 let device_ip: string | undefined
 
 // State
-let running_experiment: string | undefined
+let running_experiment: boolean = false
+let experiment_type: string = "undefined"
+let experiment_obj: Experiment | null
 
 function update_env_property(property: string, value: string)
 {
@@ -42,13 +42,28 @@ function update_sensor_calibration({name, temp}:{name:string, temp:number})
     sensors[name].calibrate(temp)
 }
 
-const start_experiment = ({experiment}: {experiment: string}) => {
-    experiment_running = true; 
+const start_experiment = ({new_experiment_type}: {new_experiment_type: string}) => {
+    if (experiments[new_experiment_type] == null)
+    {
+        logger.error(`Failed to start Experiment ${new_experiment_type} as it is not a valid experiment type`)
+        return
+    }
+    experiment_type = new_experiment_type
+    experiment_obj = new experiments[new_experiment_type](logger, )
+    
     logger.info("Experiment Started")
 }
 const stop_experiment = () => {
-    experiment_running = false; 
-    logger.info("Experiment Stopped")
+    if (running_experiment && experiment_obj != null)
+    {
+        logger.info("Stopping experiment stopped")
+        experiment_obj.stop()
+        set_heating(false)
+        logger.info("Experiment Stopped")
+        experiment_obj = null
+        running_experiment = false
+    }
+    
 }
 
 // Server Setup
@@ -76,16 +91,11 @@ async function server_start()
     }
 }
 
-const sensor_failure = (sensor: TempSensor) => sensor_read_error.refresh_error(sensor)
 async function sensor_setup()
 {
-    const success = await start_sensor_service()
+    const success = await start_sensor_service(logger)
     if (!success) {return false}
 
-    Object.keys(sensors).map(sensor_name => {
-        const sensor = sensors[sensor_name]
-        sensor.on_read_failure = sensor_failure
-    })
     logger.info("Sensor setup Completed")
     return true
 }
@@ -133,16 +143,6 @@ startup_process.add_action("senser_setup", sensor_setup)
 startup_process.add_action("gpio_setup", gpio_setup)
 startup_process.add_action("ngrok_setup", ngrok_setup)
 startup_process.add_action("get_ip_address", get_ip_address)
-
-// errors
-const sensor_error_str = (s: TempSensor) => `Sensor ${s.name} with id ${s.id} is unable to read temperature`
-sensor_read_error.set_on_error_always((sensor: TempSensor) => {
-    logger.error(sensor_error_str(sensor))
-})
-
-sensor_read_error.set_on_error((sensor: TempSensor) => {
-    send_email(`Critical Error with Device ${env.DEVICE_ID}`, sensor_error_str(sensor))
-})
 
 function write_device_success()
 {

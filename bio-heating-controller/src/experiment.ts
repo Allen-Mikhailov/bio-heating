@@ -1,4 +1,6 @@
 import { Logger } from "log4js"
+import { sensors, TempSensor } from "./temp_sensor"
+import { readFileSync }from "fs"
 
 interface ExperimentSensorConfig {
     [experiment_sensor_name: string]: string
@@ -8,14 +10,16 @@ class Experiment
 {
     name: string;
     logger: Logger;
-    sensor_config: any;
-    constructor(name: string, logger: Logger, sensor_config: ExperimentSensorConfig)
+    sensor_config: ExperimentSensorConfig;
+    sensors: {[key: string]: TempSensor}
+    constructor(name: string, logger: Logger)
     {
         this.name = name
         this.logger = logger
 
         // {sensor_name_for_experiment: sensor_name}
-        this.sensor_config = sensor_config
+        this.sensor_config = {}
+        this.sensors = {}
     }
 
     get_needed_sensors(): string[]
@@ -24,14 +28,68 @@ class Experiment
         return []
     }
 
-    start()
+    get_sensors(): boolean
     {
-        this.logger.info(`Stared Experiment ${this.name}`)
+        // Getting Sensor Config
+        try {
+            const config_string = readFileSync(this.get_config_path()).toString()
+            this.sensor_config = JSON.parse(config_string)
+        } catch(e) {
+            this.logger.error(`Failed to get sensor config for experiment ${this.name} with error: ${e}`)
+            return false
+        }
+
+        this.logger.info(`Able to get sensor config for experiment ${this.name} with config: ${this.sensor_config}`)
+
+        this.sensors = {}
+
+        let found_all_sensors: boolean = true
+        const needed_sensors: string[] = this.get_needed_sensors()
+        for (let i = 0; i < needed_sensors.length; i++)
+        {
+            const sensor_alias: string = needed_sensors[i]
+            const config_name: string | undefined = this.sensor_config[sensor_alias]
+            // Checking if it is in config
+            if (config_name === undefined)
+            {
+                this.logger.info(`Sensor alias ${sensor_alias} is not present in the sensor_config`)
+                found_all_sensors = false
+            } else if (sensors[config_name] == undefined) {
+                this.logger.info(`Sensor with alias ${sensor_alias} and name ${config_name} has not been found`)
+                found_all_sensors = false
+            } else {
+                const sensor = sensors[config_name]
+                this.logger.info(`Matched Sensor alias ${sensor_alias} with name ${config_name} and id ${sensor.id}`)
+                this.sensors[sensor_alias] = sensor
+            }
+        }
+
+        return found_all_sensors
+    }
+
+    start(): boolean
+    {
+        this.logger.info(`Attempting to start experiment ${this.name}`)
+
+        const found_all_sensors: boolean = this.get_sensors()
+
+        if (!found_all_sensors)
+        {
+            this.logger.error(`Not all sensors found needed for experiment ${this.name}. Will not continue`)
+            return false
+        }
+
+        return true
     }
 
     stop()
     {
-        
+
+    }
+
+    get_config_path(): string
+    {
+        return "" // Will need to be defined
     }
 }
 

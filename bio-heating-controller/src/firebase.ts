@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-
+import { env } from "./env_handler";
 
 const firebaseConfig = {
   apiKey: "firebase_api_key",
@@ -12,7 +12,7 @@ const firebaseConfig = {
   measurementId: "G-Q6HD131V0H"
 };
 
-firebaseConfig.apiKey = process.env.FIREBASE_API_KEY;
+firebaseConfig.apiKey = env.FIREBASE_API_KEY;
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

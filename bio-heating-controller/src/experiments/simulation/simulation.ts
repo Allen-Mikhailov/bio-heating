@@ -1,11 +1,15 @@
 import { collection } from "firebase/firestore";
-import Experiment, { sensor_config } from "../experiment";
-import { env } from "../env_handler";
-import { db } from "../firebase";
-import { logger } from "../logger";
-import { set_heating } from "../gpio_handler";
+import Experiment, { sensor_config } from "../../experiment";
+import { env } from "../../env_handler";
+import { db } from "../../firebase";
+import { logger } from "../../logger";
+import { set_heating } from "../../gpio_handler";
 import { Logger } from "log4js";
 import { Timestamp, addDoc } from "firebase/firestore";
+import path from "path";
+import { fileURLToPath } from 'url';
+
+const dir = path.dirname(fileURLToPath(import.meta.url))+"/sensor_config.json"
 
 interface simulation_packet {
     experiment_id: string;
@@ -41,17 +45,24 @@ class SimulationExperiment extends Experiment
     packet_additions: number = 0
     total_packets_sent: number = 0
     promise: Promise<void>|undefined;
-    constructor(logger: Logger, sensor_config: sensor_config)
+    stop_resolve: ((value: unknown) => void) | null = null;
+    constructor(logger: Logger)
     {
-        super("simulation", logger, sensor_config)
+        super("simulation", logger)
         this.packet = generate_new_packet()
+    }
+
+    get_needed_sensors(): string[]
+    {
+        // [sensor_name_for_experiment_1, sensor_name_for_experiment_2]
+        return ["control", "experimental"]
     }
 
     tick()
     {
         // Reading Sensors
-        const control_temp = control_sensor.read()
-        const experimental_temp = experimental_sensor.read()
+        const control_temp = this.sensors["control"].read()
+        const experimental_temp = this.sensors["experimental"].read()
         
         if (control_temp == -1 || experimental_temp == -1)
         {   
@@ -93,9 +104,14 @@ class SimulationExperiment extends Experiment
         }
     }
 
-    start_experiment()
+    start(): boolean
     {
-        const thread = new Promise(async (resolve, reject) => {
+        const start_success = super.start()
+        if (!start_success)
+            return false
+
+        new Promise(async (resolve, reject) => {
+            this.stop_resolve = resolve
             while (true)
             {
                 this.tick()
@@ -104,12 +120,17 @@ class SimulationExperiment extends Experiment
         })
 
         
-        
+        return true
     }
 
-    async stop_experiment()
+    stop()
     {
+        if (this.stop_resolve != null)
+            this.stop_resolve(0) // I am not sure what to pass to so I put 0
+    }
 
+    get_config_path(): string {
+        return dir
     }
 }
 

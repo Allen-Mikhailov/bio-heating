@@ -2,11 +2,17 @@ import { Dirent, readFileSync, readdirSync } from 'fs';
 import { Logger } from 'log4js';
 import path from "path";
 import { fileURLToPath } from 'url';
+import { send_email } from './email';
+import ToggleError from './toggle_errors';
+import { logger } from './logger';
+import { env } from './env_handler';
 
 const DEVICES_PATH = "/sys/bus/w1/devices/w1_bus_master1/"
 const SENSOR_CONFIG_PATH = path.dirname(fileURLToPath(import.meta.url))+"/config.json"
 
 const ERROR_TEMPERATURES = [0, 85] // If sensor outputs this temperature it has failed
+
+const sensor_read_error = new ToggleError("sensor_read_error")
 
 interface SensorConfig {
     [name: string]: {
@@ -15,6 +21,7 @@ interface SensorConfig {
         optional: boolean
     }
 }
+
 
 let valid_dirents: {[key: string]: Dirent} = {}
 let sensor_config: SensorConfig = {}
@@ -26,7 +33,19 @@ function is_error_temp(temp: number)
 }
 
 const default_start_failure = (sensor: TempSensor) => {}
-const default_read_failure = (sensor: TempSensor) => {}
+const default_read_failure = (sensor: TempSensor) => sensor_read_error.refresh_error(sensor)
+
+// errors
+const sensor_error_str = (s: TempSensor) => `Sensor ${s.name} with id ${s.id} is unable to read temperature`
+sensor_read_error.set_on_error_always((name: string, sensor: TempSensor) => {
+    logger.error(sensor_error_str(sensor))
+})
+
+sensor_read_error.set_on_error((name: string, sensor: TempSensor) => {
+    send_email(`Critical Error with Device ${env.DEVICE_ID}`, sensor_error_str(sensor))
+})
+
+
 
 class TempSensor
 {
