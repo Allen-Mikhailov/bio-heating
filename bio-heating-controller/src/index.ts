@@ -30,12 +30,12 @@ function update_env_property(property: string, value: string)
     write_env(env)
 }
 
-const service_update = () => exec("git pull origin master ; sudo systemctl restart bioheating-app")
+const service_update = () => exec("git pull origin master ; npx tsc ; sudo systemctl restart bioheating-app")
 const service_restart = () => exec("sudo systemctl restart bioheating-app")
 const server_restart = () => exec("sudo shutdown now -r")
 const server_shutdown = () => exec("sudo shutdown now")
 
-const change_experiment_name = ({name}: {name:string}) => update_env_property("EXPERIMENT_NAME", name)
+const change_env_property = ({property, value}: {property:string, value: string}) => update_env_property(property, value)
 
 function update_sensor_calibration({name, temp}:{name:string, temp:number})
 {
@@ -72,11 +72,10 @@ const stop_experiment = () => {
 const server = new ActionServer(server_logger, parseInt(env.SERVER_PORT))
 
 server.add_action("POST", "service_update", service_update)
-server.add_action("POST", "service_update", service_update)
 server.add_action("POST", "service_restart", service_restart)
 server.add_action("POST", "server_restart", server_restart)
 server.add_action("POST", "server_shutdown", server_shutdown)
-server.add_action("POST", "change_experiment_name", change_experiment_name)
+server.add_action("POST", "change_env_property", change_env_property)
 server.add_action("POST", "update_sensor_calibration", update_sensor_calibration)
 server.add_action("POST", "start_experiment", start_experiment)
 server.add_action("POST", "stop_experiment", stop_experiment)
