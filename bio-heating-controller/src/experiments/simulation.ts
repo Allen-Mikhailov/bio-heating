@@ -33,8 +33,6 @@ function generate_new_packet(): simulation_packet
 }
 
 const experiment_packet_collection = collection(db, "experiment_data")
-
-
 class SimulationExperiment extends Experiment
 {
     packet: simulation_packet

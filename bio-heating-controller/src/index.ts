@@ -43,6 +43,8 @@ function update_sensor_calibration({name, temp}:{name:string, temp:number})
 }
 
 const start_experiment = ({new_experiment_type}: {new_experiment_type: string}) => {
+    if (running_experiment) {return;}
+
     if (experiments[new_experiment_type] == null)
     {
         logger.error(`Failed to start Experiment ${new_experiment_type} as it is not a valid experiment type`)

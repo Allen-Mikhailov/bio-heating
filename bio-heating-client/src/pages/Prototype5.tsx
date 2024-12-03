@@ -88,14 +88,15 @@ function Prototype5()
                 {
                 data: controlData,
                 label: 'Control Tank',
+                color: "#f7a62d"
                 },
                 {
                 data: experimentalData,
                 label: 'Expirimental Tank',
                 },
             ]}
-            width={1000}
-            height={600}
+            width={1500}
+            height={400}
             
             />
     </div>

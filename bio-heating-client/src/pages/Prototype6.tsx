@@ -8,6 +8,7 @@ import { query, getDocs } from "firebase/firestore"
 
 import { convert_data, generate_csv } from "../modules/data_helpers"
 import dayjs from "dayjs"
+import Prototype5 from "./Prototype5"
 
 interface DeviceData {
     active_url: string,
@@ -134,7 +135,9 @@ function Prototype6()
         post_to_device({action: "server_shutdown"})
     }  
     
-    return <div style={{display: "flex"}}>
+    return <div>
+        
+        <div style={{display: "flex"}}>
         <div id="devices-list">
             <div><b>Devices:</b></div>
             <button onClick={refresh_devices_list}>Refresh</button>
@@ -168,6 +171,16 @@ function Prototype6()
             <button onClick={update_device}>Update Device</button><div/>
             <button onClick={server_restart}>Restart Device</button><div/>
             <button onClick={server_shutdown}>Shutdown Device</button><div/>
+            <div>Calibration</div>
+            <input id="device-controls-calibration-name"></input>
+            <input id="device-controls-calibration-value"></input>
+            <button onClick={() => {
+                post_to_device({
+                    action: "update_sensor_calibration",
+                    name: (document.getElementById("device-controls-calibration-name") as HTMLInputElement).value,
+                    temp: parseFloat((document.getElementById("device-controls-calibration-value") as HTMLInputElement).value)
+                })
+            }}>Calibrate</button><div/>
         </div>
         <div>
             <div><b>Device Properties</b></div>
@@ -199,6 +212,9 @@ function Prototype6()
             })}
         </div>
         </>}
+        
+    </div>
+    <Prototype5/>
     </div>
 }
 

@@ -49,13 +49,14 @@ function Prototype3()
             xAxis={[{ data: axisData }]}
             series={[
                 {
-                data: controlData,
-                label: 'Control Tank',
-                },
-                {
-                data: experimentalData,
-                label: 'Expirimental Tank',
-                },
+                    data: controlData,
+                    label: 'Control Tank',
+                    color: "#f7a62d"
+                    },
+                    {
+                    data: experimentalData,
+                    label: 'Expirimental Tank',
+                    },
             ]}
             width={500}
             height={300}
