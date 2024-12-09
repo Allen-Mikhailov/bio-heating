@@ -40,7 +40,7 @@ class SimulationExperiment extends Experiment
     total_packets_sent: number = 0
     running = false;
     promise: Promise<void>|undefined;
-    stop_resolve: ((value: unknown) => void) | null = null;
+    stop_resolve: (() => void) | null = null;
     constructor(logger: Logger)
     {
         super("simulation", logger)
@@ -105,7 +105,7 @@ class SimulationExperiment extends Experiment
         if (!start_success)
             return false
 
-        new Promise(async (resolve, reject) => {
+        new Promise<void>(async (resolve, reject) => {
             this.stop_resolve = resolve
             while (true)
             {
@@ -126,7 +126,7 @@ class SimulationExperiment extends Experiment
         if (this.stop_resolve != null)
         {
             this.running = false
-            this.stop_resolve(0) // I am not sure what to pass to so I put 0
+            this.stop_resolve()
         }
             
     }

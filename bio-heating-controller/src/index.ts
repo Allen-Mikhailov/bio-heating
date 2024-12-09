@@ -12,6 +12,7 @@ import { gpio_setup, set_heating } from './gpio_handler.js';
 import CustomProcess from "./custom_process.js";
 import experiments from './all_experiments.js';
 import Experiment from './experiment.js';
+import generate_device_packet from './device_packet.js';
 
 const startup_process = new CustomProcess("Startup")
 startup_process.set_logger(startup_logger)
@@ -73,14 +74,18 @@ const stop_experiment = () => {
 // Server Setup
 const server = new ActionServer(server_logger, parseInt(env.SERVER_PORT))
 
-server.add_action("POST", "service_update", service_update)
-server.add_action("POST", "service_restart", service_restart)
-server.add_action("POST", "server_restart", server_restart)
-server.add_action("POST", "server_shutdown", server_shutdown)
-server.add_action("POST", "change_env_property", change_env_property)
-server.add_action("POST", "update_sensor_calibration", update_sensor_calibration)
-server.add_action("POST", "start_experiment", start_experiment)
-server.add_action("POST", "stop_experiment", stop_experiment)
+// POST actions
+server.add_post_action("service_update", service_update)
+server.add_post_action("service_restart", service_restart)
+server.add_post_action("server_restart", server_restart)
+server.add_post_action("server_shutdown", server_shutdown)
+server.add_post_action("change_env_property", change_env_property)
+server.add_post_action("update_sensor_calibration", update_sensor_calibration)
+server.add_post_action("start_experiment", start_experiment)
+server.add_post_action("stop_experiment", stop_experiment)
+
+// GET actions
+server.add_get_action("/device_packet", generate_device_packet)
 
 async function server_start()
 {

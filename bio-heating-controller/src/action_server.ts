@@ -8,12 +8,14 @@ const POST_JSON_PARSE_ERROR = ERROR_HEADING+"Failed to parse data from post requ
 const POST_NO_ACTION_ERROR = ERROR_HEADING+"Post request made with no action. body:\n%s"
 const POST_NO_VALID_ACTION_ERROR = ERROR_HEADING+"Post request no action found for \"%s\". body:\n%s"
 
+const GET_NO_VALID_ACTION_ERROR = ERROR_HEADING+"Get request no action found for \"%s\"."
+
 class ActionServer
 {
     port: number;
     logger: Logger;
-    get_actions: {[key: string]: (data: any) => void}
-    post_actions: {[key: string]: (data: any) => void}
+    get_actions: {[key: string]: () => string}
+    post_actions: {[key: string]:  (data: any) => void}
 
     constructor(logger: Logger, port: number)
     {
@@ -31,12 +33,12 @@ class ActionServer
         })
 
         req.on("end", () => {
-            let data: any
+            let data: any = null
 
             try {
                 data = JSON.parse(body)
             } catch(e) {
-
+                
             }
 
             // Guard Clauses
@@ -56,9 +58,24 @@ class ActionServer
 
     get_request(req: http.IncomingMessage, res: http.ServerResponse)
     {
-        // Will do this later
-        res.write('Hello World!'); //write a response to the client
-        res.end();
+        const name: string = req.url || ""
+        if (!this.get_actions[name])
+        {
+            this.logger.warn(format(GET_NO_VALID_ACTION_ERROR, req.url))
+            res.writeHead(404);
+            res.end()
+            return
+        }
+            
+        try {
+            const response_data: string = this.get_actions[name]()
+            res.writeHead(200, {"Content-Type": "application/json"});
+            res.end(response_data)
+        } catch(e) {
+            res.writeHead(403);
+            res.end()
+        }
+        
     }
 
     async start()
@@ -93,14 +110,14 @@ class ActionServer
         
     }
 
-    add_action(type: string, name: string, callback: (data: any) => void)
+    add_post_action(name: string, callback: (data: any) => void )
     {
-        if (type == "GET")
-        {
-            this.get_actions[name] = callback 
-        } else if (type == "POST") {
-            this.post_actions[name] = callback 
-        }
+        this.post_actions[name] = callback
+    }
+
+    add_get_action(name: string, callback: () => string )
+    {
+        this.get_actions[name] = callback 
     }
 }
 

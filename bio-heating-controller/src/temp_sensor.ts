@@ -188,4 +188,4 @@ async function start_service(logger: Logger)
 }
 
 
-export { TempSensor, start_service, sensors }
+export { TempSensor, start_service, sensors, valid_dirents, SENSOR_CONFIG_PATH }

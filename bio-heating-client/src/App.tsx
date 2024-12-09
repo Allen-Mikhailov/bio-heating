@@ -2,6 +2,8 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import './App.css'
 
 import HomePage from './pages/HomePage'
@@ -11,12 +13,34 @@ import Prototype3 from './pages/Prototype3.tsx'
 import Prototype4 from './pages/Prototype4.tsx'
 import Prototype5 from './pages/Prototype5.tsx';
 import Prototype6 from './pages/Prototype6.tsx';
+import Prototype7 from './pages/Prototype7.tsx';
+
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#fb8c00',
+    },
+    secondary: {
+      main: '#f50057',
+    },
+    background: {
+      default: '#05070a',
+      paper: '#05070a',
+    },
+  },
+});
 
 function App() {
-  // const [count, setCount] = useState(0)
-
   return (
-    <BrowserRouter>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <BrowserRouter>
       <LocalizationProvider adapterLocale={AdapterDayjs}>
       <Routes>
           <Route path="/" element={<HomePage/>} />
@@ -26,10 +50,13 @@ function App() {
           <Route path="/prototype4" element={<Prototype4/>} />
           <Route path="/prototype5" element={<Prototype5/>} />
           <Route path="/prototype6" element={<Prototype6/>} />
+          <Route path="/prototype7" element={<Prototype7/>} />
           </Routes>
           <div><Link to={"/prototypes"}>Prototypes</Link></div>
       </LocalizationProvider>
     </BrowserRouter>
+    </ThemeProvider>
+    
   )
 }
 
