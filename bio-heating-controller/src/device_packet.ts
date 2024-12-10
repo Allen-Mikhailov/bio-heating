@@ -35,7 +35,7 @@ function generate_device_packet(): string
 
     // Experiments
     Object.keys(experiments).map(experiment_name => {
-        const p = path.resolve(main_dir, "..", `experiment_configs`, `${experiment_name}_sensor_config.json`)
+        const p = path.resolve(main_dir, `experiment_configs`, `${experiment_name}_sensor_config.json`)
         packet.simulation_sensor_configs[experiment_name] = JSON.parse(readFileSync(p).toString())
     })
 
