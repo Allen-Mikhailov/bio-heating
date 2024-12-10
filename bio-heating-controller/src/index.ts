@@ -204,7 +204,7 @@ async function start_device() {
         startup_fail(["write_device_opening_to_firebase"])
     }
 
-    send_email("Device Online", `The Device "${env.DEVICE_ID}" is online and running smoothly v1.1`)
+    send_email("Device Online", `The Device "${env.DEVICE_ID}" is online and running smoothly v1.2`)
 }
 
 start_device();
