@@ -11,8 +11,5 @@ echo "Node version: $(node -v)"
 echo "NPM version: $(npm -v)"
 echo "TSC version: $(npx tsc -v)"
 
-# Clear TypeScript cache
-npx tsc --build --clean
-
 # Run your TypeScript build
-npx tsc --build
+/home/bioheating/.nvm/versions/node/v23.3.0/bin/npx tsc --build
