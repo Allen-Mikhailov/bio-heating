@@ -33,8 +33,8 @@ function generate_device_packet(): string
 
     // Experiments
     Object.keys(experiments).map(experiment_name => {
-        const experiment_class = experiments[experiment_name] as Experiment
-        const path = experiment_class.get_config_path()
+        const experiment_class = experiments[experiment_name]
+        const path = experiment_class.get_config_path_static()
         packet.simulation_sensor_configs[experiment_name] = JSON.parse(readFileSync(path).toString())
     })
 
