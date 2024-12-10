@@ -3,7 +3,8 @@ import { fileURLToPath } from 'url';
 import { readFileSync, writeFileSync } from "fs";
 
 import { parse, config } from 'dotenv';
-const env_path = path.dirname(fileURLToPath(import.meta.url))+"/../.env"
+const main_dir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
+const env_path = path.resolve(main_dir, ".env")
 config({path: env_path})
 
 function get_env()
@@ -48,4 +49,4 @@ function write_env(env_object: {})
 
 env = get_env()
 
-export { env, write_env, connect_to_env_update, env_update, get_env }
+export { env, write_env, connect_to_env_update, env_update, get_env, main_dir }

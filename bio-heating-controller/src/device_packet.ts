@@ -4,6 +4,8 @@ import { readFileSync } from 'fs';
 import experiments from "./all_experiments.js";
 import { get_env } from "./env_handler.js";
 import Experiment from "./experiment.js";
+import path from "path"
+import { main_dir } from "./env_handler.js";
 
 const PROTECTED_ENV_VALUES = [
     "SENDGRID_API_KEY",
@@ -33,9 +35,8 @@ function generate_device_packet(): string
 
     // Experiments
     Object.keys(experiments).map(experiment_name => {
-        const experiment_class = experiments[experiment_name]
-        const path = experiment_class.get_config_path_static()
-        packet.simulation_sensor_configs[experiment_name] = JSON.parse(readFileSync(path).toString())
+        const p = path.resolve(main_dir, "..", `experiment_configs`, `${experiment_name}_sensor_config.json`)
+        packet.simulation_sensor_configs[experiment_name] = JSON.parse(readFileSync(p).toString())
     })
 
     // Raw Sensors

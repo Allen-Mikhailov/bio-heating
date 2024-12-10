@@ -89,11 +89,6 @@ class Experiment
 
     }
 
-    static get_config_path_static(): string
-    {
-        return path.dirname(fileURLToPath(import.meta.url))+`/../experiment_configs/${this.name}_sensor_config.json`
-    }
-
     get_config_path(): string
     {
         return path.dirname(fileURLToPath(import.meta.url))+`/../experiment_configs/${this.name}_sensor_config.json`
