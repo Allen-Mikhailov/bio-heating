@@ -41,8 +41,8 @@ const options = {
 
 logger.info("maindir: "+main_dir) // test
 
-const service_update = () => exec(`cd ${dir} ; git pull origin master ; npx tsc ;`, async (error, stdout) => {
-    
+const service_update = () => exec(`cd ${dir} ; which node ; which tsc ; whoami ; git pull origin master ; npx tsc ;`, async (error, stdout) => {
+
     logger.info("Update stdout: "+stdout)
     logger.info("Update error: "+error)
 
