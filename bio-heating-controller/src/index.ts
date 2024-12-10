@@ -33,11 +33,13 @@ function update_env_property(property: string, value: string)
     write_env(env)
 }
 
+const dir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
+
 const options = { 
-    cwd: path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..") // Change to your desired directory
+    cwd: dir // Change to your desired directory
   };
 
-const service_update = () => exec("git pull origin master ; npx tsc ; sudo systemctl restart bioheating-app", options)
+const service_update = () => exec(`cd ${dir} ; git pull origin master ; npx tsc ; sudo systemctl restart bioheating-app`, options)
 const service_restart = () => exec("sudo systemctl restart bioheating-app")
 const server_restart = () => exec("sudo shutdown now -r")
 const server_shutdown = () => exec("sudo shutdown now")
