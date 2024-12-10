@@ -72,8 +72,8 @@ class ActionServer
             res.writeHead(200, {"Content-Type": "application/json"});
             res.end(response_data)
         } catch(e) {
-            res.writeHead(403);
-            res.end()
+            res.writeHead(200);
+            res.end(`No command given for "${req.url}"`)
         }
         
     }
