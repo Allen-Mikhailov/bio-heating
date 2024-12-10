@@ -41,9 +41,11 @@ const options = {
 
 logger.info("maindir: "+main_dir) // test
 
-const service_update = () => exec(`cd ${dir} ; git pull origin master ; npx tsc ; sudo systemctl restart bioheating-app`, (error, stdout) => {
+const service_update = () => exec(`cd ${dir} ; git pull origin master ; npx tsc ;`, (error, stdout) => {
     logger.info("Update stdout: "+stdout)
     logger.info("Update error: "+error)
+
+    service_restart()
 })
 const service_restart = () => exec("sudo systemctl restart bioheating-app")
 const server_restart = () => exec("sudo shutdown now -r")
