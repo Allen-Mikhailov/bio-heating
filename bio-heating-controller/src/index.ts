@@ -1,4 +1,4 @@
-import { env, write_env } from './env_handler.js';
+import { env, main_dir, write_env } from './env_handler.js';
 
 import { db } from './firebase.js';
 import { addDoc, collection, setDoc, doc, Timestamp } from 'firebase/firestore';
@@ -38,6 +38,8 @@ const dir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 const options = { 
     cwd: dir // Change to your desired directory
   };
+
+logger.info("maindir: "+main_dir) // test
 
 const service_update = () => exec(`cd ${dir} ; git pull origin master ; npx tsc ; sudo systemctl restart bioheating-app`, options)
 const service_restart = () => exec("sudo systemctl restart bioheating-app")

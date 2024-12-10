@@ -19,7 +19,8 @@ function generate_device_packet(): string
         all_device_sensors: [],
         sensor_config: {},
         simulation_sensor_configs: {},
-        env: {}
+        env: {},
+        sensor_readings: {}
     }
 
     // Sensors
@@ -42,6 +43,10 @@ function generate_device_packet(): string
     // Raw Sensors
     Object.keys(raw_sensors).map(sensor_id => {
         packet.all_device_sensors.push(sensor_id)
+    })
+
+    Object.keys(sensors).map(sensor_id => {
+        packet.sensor_readings[sensor_id] = sensors[sensor_id].temp
     })
 
     return JSON.stringify(packet)

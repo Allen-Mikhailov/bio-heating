@@ -27,11 +27,9 @@ import dayjs from "dayjs"
 import Prototype5 from "./Prototype5"
 
 interface SensorConfig {
-    [name: string]: {
-        id: string,
-        calibration: number,
-        optional: boolean
-    }
+    id: string,
+    calibration: number,
+    optional: boolean
 }
 
 interface DeviceData {
@@ -47,7 +45,7 @@ interface DevicePacket {
     all_device_sensors: string[],
     sensor_config: {[key: string]: SensorConfig},
     simulation_sensor_configs: {[key: string]: string},
-    env: {}
+    env: {[key: string]: string}
 }
 
 const experiment_types = ["simulation"]
@@ -95,8 +93,12 @@ function DevicesPanel({devicesData, selectedDevice, setSelectedDevice, refresh_d
     </Card>
 }
 
-function PropertyEdit({selectedDevice, post_to_device}: {selectedDevice: string|null, post_to_device: (...any: any) => void})
+function PropertyEdit({selectedDevice, post_to_device, devicePacket}: 
+    {selectedDevice: string|null, post_to_device: (...any: any) => void, devicePacket: DevicePacket|undefined})
 {
+    const [newDevice, setNewDevice] = useState(true)
+
+
     return <Card variant="outlined" sx={{height: "100%"}}><Paper>
         <CardContent>
             <Typography variant="h5" component="div">
@@ -110,7 +112,7 @@ function PropertyEdit({selectedDevice, post_to_device}: {selectedDevice: string|
                         label={properties[property]} 
                         variant="outlined" 
                         size="small"
-                        defaultValue={4}
+                        defaultValue={devicePacket?.env[property]}
                         helperText={""}
                         />
                         <Button variant="outlined" size="small" sx={{marginLeft: 1}} onClick={() => {
@@ -220,6 +222,41 @@ function DeviceDataPanel({selectedDeviceData, selectedDevice}: {selectedDeviceDa
     </Card>
 }
 
+function SensorCard({devicePacket, sensor_id}: {devicePacket: DevicePacket|undefined, sensor_id: string})
+{
+    const [sensorName, setSensorName] = useState("")
+    useEffect(() => {
+        if (devicePacket == null) {return;}
+
+        let found_config_match = false
+
+        Object.keys(devicePacket.sensor_config || {}).map(sensor_name => {
+            const sensor_config: SensorConfig = devicePacket.sensor_config[sensor_name]
+            if (sensor_config.id == sensor_id)
+            {
+                setSensorName(sensor_name)
+                found_config_match = true
+            }
+        })
+
+        if (!found_config_match)
+        {
+            setSensorName("NO_CONFIG")
+        }
+    }, [sensor_id, devicePacket])
+
+    return <Card sx={{marginTop: 1}} variant="outlined" key={sensor_id}>
+        <Paper elevation={4}>
+            <CardContent>
+                <Typography>{sensor_id}</Typography>
+                <Typography sx={{ color: 'text.secondary', fontSize: 14, marginTop: -.25 }}>
+                    {sensorName}
+                </Typography>{}
+            </CardContent>
+        </Paper>
+    </Card>
+}
+
 function SensorPanel({devicePacket}: {devicePacket: DevicePacket|undefined})
 {
     return <Card variant="outlined" sx={{height: "100%"}}>
@@ -229,13 +266,7 @@ function SensorPanel({devicePacket}: {devicePacket: DevicePacket|undefined})
                     Sensors
                 </Typography>
                 {devicePacket && devicePacket.all_device_sensors.map((sensor_id) => {
-                    return <Card>
-                        <Paper elevation={4}>
-                            <CardContent>
-
-                            </CardContent>
-                        </Paper>
-                    </Card>
+                    return <SensorCard devicePacket={devicePacket} sensor_id={sensor_id} key={sensor_id}/>
                 })}
             </CardContent>
         </Paper>
@@ -260,17 +291,6 @@ function Prototype7()
                 return devicesData[i]
         }
         return null
-    }
-
-    function requestDevicePacket()
-    {
-        if (!selectedDeviceData || !selectedDeviceData.is_active)
-        {
-            setDevicePacket(undefined)
-            return;
-        }
-
-        fetch(selectedDeviceData.active_url+"/device_packet").then()
     }
 
     function post_to_device(data: any)
@@ -326,11 +346,36 @@ function Prototype7()
     }
 
     useEffect(() => {
+        function requestDevicePacket()
+        {
+            console.log("Requesting", selectedDeviceData)
+            if (selectedDeviceData == null) {return;}
+            fetch(selectedDeviceData.active_url+"/device_packet").then(async response => {
+                const json = await response.json()
+                console.log(json)
+                setDevicePacket(json as DevicePacket)
+            }).catch(e => {
+                console.log("Failed to get device packet", e)
+            })
+        }
+        if (!selectedDeviceData || !selectedDeviceData.is_active)
+        {
+            setDevicePacket(undefined)
+            return;
+        } else {
+            requestDevicePacket()
+            const interval = setInterval(requestDevicePacket, 5000)
+            return () => {
+                clearInterval(interval);
+            };
+        }
+        
+    }, [selectedDeviceData])
+
+    useEffect(() => {
         refresh_devices_list()
-        const interval = setInterval(requestDevicePacket, 5000)
-        return () => {
-            clearInterval(interval);
-          };
+
+        
     }, [])
 
     useEffect(() => {
@@ -351,7 +396,7 @@ function Prototype7()
             refresh_devices_list={refresh_devices_list}
         />
         <DeviceDataPanel selectedDevice={selectedDevice} selectedDeviceData={selectedDeviceData}/>
-        <PropertyEdit post_to_device={post_to_device} selectedDevice={selectedDevice}/>
+        <PropertyEdit post_to_device={post_to_device} selectedDevice={selectedDevice} devicePacket={devicePacket}/>
         <DeviceActionsPanel post_to_device={post_to_device}/>
         <SensorPanel devicePacket={devicePacket}/>
     </Grid2>
