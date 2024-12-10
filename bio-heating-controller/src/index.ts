@@ -13,6 +13,8 @@ import CustomProcess from "./custom_process.js";
 import experiments from './all_experiments.js';
 import Experiment from './experiment.js';
 import generate_device_packet from './device_packet.js';
+import path from "path";
+import { fileURLToPath } from 'url';
 
 const startup_process = new CustomProcess("Startup")
 startup_process.set_logger(startup_logger)
@@ -31,7 +33,11 @@ function update_env_property(property: string, value: string)
     write_env(env)
 }
 
-const service_update = () => exec("git pull origin master ; npx tsc ; sudo systemctl restart bioheating-app")
+const options = { 
+    cwd: path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..") // Change to your desired directory
+  };
+
+const service_update = () => exec("git pull origin master ; npx tsc ; sudo systemctl restart bioheating-app", options)
 const service_restart = () => exec("sudo systemctl restart bioheating-app")
 const server_restart = () => exec("sudo shutdown now -r")
 const server_shutdown = () => exec("sudo shutdown now")
