@@ -54,7 +54,8 @@ class ActionServer
             this.logger.info(`Began action ${data.action} on request`)
             this.post_actions[data.action](data)
 
-            res.end("it worked")
+            res.writeHead(200, {"Content-Type": "application/json"});
+            res.end(`{"message": "it worked"}`)
         })
     }
 
