@@ -55,6 +55,7 @@ class SimulationExperiment extends Experiment
 
     tick()
     {
+        this.logger.info("Ticking")
         // Reading Sensors
         const control_temp = this.sensors["control"].read()
         const experimental_temp = this.sensors["experimental"].read()
@@ -64,6 +65,7 @@ class SimulationExperiment extends Experiment
         if (control_temp == -1 || experimental_temp == -1)
         {   
             // Errored read
+            this.logger.info("Errored sensor read")
             set_heating(false)
         } else {
             // Successful read
@@ -103,16 +105,22 @@ class SimulationExperiment extends Experiment
 
     start(): boolean
     {
+        const sim = this
         const start_success = super.start()
         if (!start_success)
             return false
 
+
+
         new Promise<void>(async (resolve, reject) => {
-            this.stop_resolve = resolve
+            sim.stop_resolve = resolve
             while (true)
             {
-                if (!this.running) {break;}
-                this.tick()
+                sim.logger.info("Tick attempt")
+                // if (!sim.running) {
+                //     break;
+                // }
+                sim.tick()
                 await sleep(parseFloat(env.READ_INTERVAL))
             }
         })
