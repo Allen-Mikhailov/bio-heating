@@ -14,9 +14,11 @@ import {
     ListItemIcon, 
     ListItemText, 
     Paper, 
+    Snackbar, 
     TextField, 
     Typography 
 } from "@mui/material"
+import { axisClasses } from '@mui/x-charts/ChartsAxis';
 
 
 import { db } from "../modules/firebase"
@@ -45,7 +47,8 @@ interface DevicePacket {
     all_device_sensors: string[],
     sensor_config: {[key: string]: SensorConfig},
     simulation_sensor_configs: {[key: string]: string},
-    env: {[key: string]: string}
+    env: {[key: string]: string},
+    sensor_readings: {[key: string]: number}
 }
 
 const experiment_types = ["simulation"]
@@ -93,13 +96,36 @@ function DevicesPanel({devicesData, selectedDevice, setSelectedDevice, refresh_d
     </Card>
 }
 
-function PropertyEdit({selectedDevice, post_to_device, devicePacket}: 
-    {selectedDevice: string|null, post_to_device: (...any: any) => void, devicePacket: DevicePacket|undefined})
+function PropertyEdit({selectedDevice, post_to_device, devicePacket, selectedDeviceData}: 
+    {
+        selectedDevice: string|null, 
+        post_to_device: (...any: any) => void, 
+        devicePacket: DevicePacket|undefined, 
+        selectedDeviceData: DeviceData|null
+    })
 {
     const [newDevice, setNewDevice] = useState(true)
+    const [deviceProperties, setDeviceProperties] = useState<{[key: string]: string}>({})
+
+    const offline = selectedDeviceData == null || !selectedDeviceData.is_active
+    const cardSX ={height: "100%", opacity: offline ? 0.5 : 1,pointerEvents:offline ? "none" : "auto"}
+
+    useEffect(() => {
+        setNewDevice(true)
+    }, [selectedDevice])
+
+    useEffect(() => {
+        if (!newDevice || !devicePacket) { return }
+        const newProps: {[key: string]: string} = {}
+        Object.keys(properties).map(property => {
+            newProps[property] = devicePacket.env[property]
+        })
+        setDeviceProperties(newProps)
+        setNewDevice(false)
+    }, [devicePacket, newDevice])
 
 
-    return <Card variant="outlined" sx={{height: "100%"}}><Paper>
+    return <Card variant="outlined" sx={cardSX}><Paper>
         <CardContent>
             <Typography variant="h5" component="div">
                 Device Properties
@@ -112,6 +138,12 @@ function PropertyEdit({selectedDevice, post_to_device, devicePacket}:
                         label={properties[property]} 
                         variant="outlined" 
                         size="small"
+                        value={deviceProperties[property] || ""}
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                            const newProps = JSON.parse(JSON.stringify(deviceProperties))
+                            newProps[property] = event.target.value
+                            setDeviceProperties(newProps)
+                        }}
                         defaultValue={devicePacket?.env[property]}
                         helperText={""}
                         />
@@ -131,19 +163,40 @@ function PropertyEdit({selectedDevice, post_to_device, devicePacket}:
 }
 
 const DividerColor = "#555"
-function DeviceActionsPanel({post_to_device}: {post_to_device: (...any: any) => void})
+function DeviceActionsPanel({post_to_device, selectedDeviceData}: {post_to_device: (...any: any) => Promise<void>, selectedDeviceData: DeviceData|null})
 {
+    const [snackOpen, setSnackOpen] = useState(false)
+    const [snackMessage, setSnackMessage] = useState("")
+
+    function open_snack(snack: string)
+    {
+        setSnackOpen(true)
+        setSnackMessage(snack)
+        console.log("snacked")
+    }
+
+    async function device_post(post: any, snack: string)
+    {
+        console.log("sneed")
+        await post_to_device(post)
+        console.log("sneed2")
+        open_snack(snack)
+    }
+
     const [experimentType, setExperimentType] = useState<string>("simulation")
-    const start_experiment = () => { post_to_device({action: "start_experiment", new_experiment_type: experimentType}) }
-    const stop_experiment =  () => { post_to_device({action: "stop_experiment"}) }
-    const service_update =   () => { post_to_device({action: "service_update"}) }
-    const service_restart =  () => { post_to_device({action: "service_restart"}) }
-    const server_restart =   () => { post_to_device({action: "server_restart"}) } 
-    const server_shutdown =  () => { post_to_device({action: "server_shutdown"}) }  
+    const start_post = {action: "start_experiment", new_experiment_type: experimentType}
+    const start_experiment = () => { device_post(start_post, "Started Experiment") }
+    const stop_experiment =  () => { device_post({action: "stop_experiment"}, "Stopped Experiment") }
+    const service_update =   () => { device_post({action: "service_update"}, "Updated Service") }
+    const service_restart =  () => { device_post({action: "service_restart"}, "Restarted Service") }
+    const server_restart =   () => { device_post({action: "server_restart"}, "Restarted Device") } 
+    const server_shutdown =  () => { device_post({action: "server_shutdown"}, "Shutdown Device") }  
 
     const buttonSX = {width: "100%", marginTop: 1}
+    const offline = selectedDeviceData == null || !selectedDeviceData.is_active
+    const cardSX ={height: "100%", opacity: offline ? 0.5 : 1,pointerEvents:offline ? "none" : "auto"}
 
-    return <Card variant="outlined" sx={{width: 300, height: "100%"}}><Paper>
+    return <Card variant="outlined" sx={cardSX}><Paper>
         <CardContent>
             <Typography variant="h5" component="div">
                 Device Actions
@@ -156,12 +209,12 @@ function DeviceActionsPanel({post_to_device}: {post_to_device: (...any: any) => 
                 <Grid2 size={6}>
                 
                     <TextField
-                id="outlined-select-currency-native"
+                id="experiment-picker"
                 select
                 size="small"
                 sx={{width: "100%"}}
                 label="Experiment"
-                defaultValue="EUR"
+                defaultValue="simulation"
                 slotProps={{
                     select: {
                     native: true,
@@ -187,13 +240,20 @@ function DeviceActionsPanel({post_to_device}: {post_to_device: (...any: any) => 
             <Button variant="outlined"sx={buttonSX} onClick={server_shutdown}>device shutdown</Button>
             
         </CardContent></Paper>
+            <Snackbar
+            open={snackOpen}
+            autoHideDuration={6000}
+            onClose={() => setSnackOpen(false)}
+            message={snackMessage}
+        />
     </Card>
 }
 
 function DeviceDataPanel({selectedDeviceData, selectedDevice}: {selectedDeviceData: DeviceData|null, selectedDevice: string|null})
 {
     const offline = selectedDeviceData == null || !selectedDeviceData.is_active
-    return <Card variant="outlined" sx={{height: "100%", opacity: offline ? 0.5 : 1,pointerEvents:offline ? "none" : "auto"}}>
+    const cardSX ={height: "100%", opacity: offline ? 0.5 : 1,pointerEvents:offline ? "none" : "auto"}
+    return <Card variant="outlined" sx={cardSX}>
         <Paper>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
@@ -241,17 +301,22 @@ function SensorCard({devicePacket, sensor_id}: {devicePacket: DevicePacket|undef
 
         if (!found_config_match)
         {
-            setSensorName("NO_CONFIG")
+            setSensorName("NO ALIAS")
         }
     }, [sensor_id, devicePacket])
+
+    let reading: number|undefined = devicePacket?.sensor_readings[sensorName]
+    if (reading) {reading = Math.round(reading*100)/100}
 
     return <Card sx={{marginTop: 1}} variant="outlined" key={sensor_id}>
         <Paper elevation={4}>
             <CardContent>
                 <Typography>{sensor_id}</Typography>
                 <Typography sx={{ color: 'text.secondary', fontSize: 14, marginTop: -.25 }}>
-                    {sensorName}
-                </Typography>{}
+                    Alias: {sensorName}
+                </Typography>
+                {devicePacket && <Chip label={reading+"°C"}/>}
+                <Button>Calibrate</Button>
             </CardContent>
         </Paper>
     </Card>
@@ -273,15 +338,134 @@ function SensorPanel({devicePacket}: {devicePacket: DevicePacket|undefined})
     </Card>
 }
 
+function ExperimentDisplayPanel()
+{
+    const [experimentId, setExperimentId] = useState("")
+    const [thread, setThread] = useState<[number, number, Timestamp][]>([])
+
+    const [axisData, setAxisData] = useState<Date[]>([])
+    const [controlData, setControlData] = useState<number[]>([])
+    const [experimentalData, setExperimentalData] = useState<number[]>([])
+
+    async function download_csv()
+    {
+        const thread = await request_data()
+
+        const csv = "data:text/csv;charset=utf-8,"+generate_csv(thread)
+        let encodedUri = encodeURI(csv);
+        let link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `${experimentId}.csv`);
+        document.body.appendChild(link); // Required for FF
+
+        link.click();
+    }
+
+    async function request_data()
+    {
+        const q: any = query(collection(db, "experiment_data"), where('experiment_id', '==', experimentId))
+        const docs = await getDocs(q)
+
+        const packets: [number[], number[], Timestamp[]][] = []
+
+        interface firebase_packet 
+        {
+            control_temp: number[],
+            experimental_temp: number[],
+            temperature_timestamps: Timestamp[]
+        }
+
+        docs.forEach(doc => {
+            const data: firebase_packet = doc.data() as firebase_packet
+            packets.push([data.control_temp, data.experimental_temp, data.temperature_timestamps])
+        })
+        
+        const new_thread = convert_data(packets)
+
+        setThread(new_thread)
+
+        // const start_time = new_thread[0][2].toMillis()/1000
+
+        const data_points = 50
+
+        let new_control: number[] = []
+        let new_experimental: number[] = []
+        let new_axis: Date[] = []
+        for (let i = 0; i < data_points; i++)
+        {
+            const j = Math.floor(i/data_points * new_thread.length)
+
+            new_control.push(new_thread[j][0])
+            new_experimental.push(new_thread[j][1])
+            
+            new_axis.push( (new_thread[j][2].toDate()))
+        }
+
+        setAxisData(new_axis)
+        setControlData(new_control)
+        setExperimentalData(new_experimental)
+
+        return new_thread
+    }
+
+    return <Card variant="outlined" sx={{height: "100%"}}>
+        <Paper>
+            <CardContent>
+                <Typography variant="h5">
+                    Experiment Data
+                </Typography>
+                <div style={{display: "flex", alignItems: "center"}}>
+                <Paper elevation={4} sx={{padding: 1, marginTop: 1}}>
+                    <TextField id={`experiment_display_panel_input`} 
+                        label="Experiment ID" 
+                        variant="outlined" 
+                        size="small"
+                        value={experimentId}
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                            setExperimentId(event.target.value)
+                        }}
+                        />
+                        <Button variant="outlined" sx={{marginLeft: 1}} onClick={request_data}>Display</Button>
+                        <Button variant="outlined" sx={{marginLeft: 1}} onClick={download_csv}>Download</Button>
+                </Paper>
+                
+                </div>
+                <LineChart
+            xAxis={[{ data: axisData, scaleType: "time", label: "Time" }]}
+            yAxis={ [{label: 'Temperature (C)' }]}
+            series={[
+                {
+                data: controlData,
+                label: 'Control Tank',
+                color: "#f7a62d",
+                showMark: ({ index }) => false,
+                },
+                {
+                data: experimentalData,
+                label: 'Expirimental Tank',
+                showMark: ({ index }) => false,
+                },
+            ]}
+            width={600}
+            height={300}
+            sx={{
+                [`& .${axisClasses.left} .${axisClasses.label}`]: {
+                  transform: 'translateX(-10px)',
+                },
+              }}
+            
+            />
+            </CardContent>
+        </Paper>
+    </Card>
+}
+
 function Prototype7()
 {
     const [devicesData, setDevicesData] = useState<DeviceData[]>([])
     const [selectedDevice, setSelectedDevice] = useState<string|null>(null)
     const [selectedDeviceData, setSelectedDeviceData] = useState<DeviceData|null>(null)
     const [devicePacket, setDevicePacket] = useState<DevicePacket>()
-
-
-    const [requestTick, setRequestTick] = useState<number>(0)
 
     function getDeviceData(device_id: string): DeviceData|null
     {
@@ -293,18 +477,19 @@ function Prototype7()
         return null
     }
 
-    function post_to_device(data: any)
+    async function post_to_device(data: any)
     {
         if (selectedDevice == null) {return;}
         const device_data = getDeviceData(selectedDevice)
         if (device_data == null) {return;}
-        fetch(device_data.active_url, {
+        await fetch(device_data.active_url, {
             method: "POST",
             body: JSON.stringify(data),
             headers: {
-              "Content-Type": "application/json"
+                "Content-Type": "application/json"
             }
-          });
+        });
+        
     }
 
     async function refresh_devices_list()
@@ -396,9 +581,15 @@ function Prototype7()
             refresh_devices_list={refresh_devices_list}
         />
         <DeviceDataPanel selectedDevice={selectedDevice} selectedDeviceData={selectedDeviceData}/>
-        <PropertyEdit post_to_device={post_to_device} selectedDevice={selectedDevice} devicePacket={devicePacket}/>
-        <DeviceActionsPanel post_to_device={post_to_device}/>
+        <PropertyEdit 
+            post_to_device={post_to_device} 
+            selectedDevice={selectedDevice} 
+            devicePacket={devicePacket} 
+            selectedDeviceData={selectedDeviceData}
+        />
+        <DeviceActionsPanel post_to_device={post_to_device} selectedDeviceData={selectedDeviceData}/>
         <SensorPanel devicePacket={devicePacket}/>
+        <ExperimentDisplayPanel/>
     </Grid2>
 }
 

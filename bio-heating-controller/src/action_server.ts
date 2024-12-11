@@ -53,6 +53,8 @@ class ActionServer
 
             this.logger.info(`Began action ${data.action} on request`)
             this.post_actions[data.action](data)
+
+            res.end("it worked")
         })
     }
 
