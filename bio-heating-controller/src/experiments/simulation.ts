@@ -58,6 +58,8 @@ class SimulationExperiment extends Experiment
         // Reading Sensors
         const control_temp = this.sensors["control"].read()
         const experimental_temp = this.sensors["experimental"].read()
+
+        this.logger.info("Ticking")
         
         if (control_temp == -1 || experimental_temp == -1)
         {   

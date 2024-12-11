@@ -7,6 +7,8 @@ import {
     CardActionArea, 
     CardContent, 
     Chip, 
+    Dialog, 
+    DialogTitle, 
     Divider, 
     Grid2, List, 
     ListItem, 
@@ -172,14 +174,11 @@ function DeviceActionsPanel({post_to_device, selectedDeviceData}: {post_to_devic
     {
         setSnackOpen(true)
         setSnackMessage(snack)
-        console.log("snacked")
     }
 
     async function device_post(post: any, snack: string)
     {
-        console.log("sneed")
         await post_to_device(post)
-        console.log("sneed2")
         open_snack(snack)
     }
 
@@ -285,6 +284,7 @@ function DeviceDataPanel({selectedDeviceData, selectedDevice}: {selectedDeviceDa
 function SensorCard({devicePacket, sensor_id}: {devicePacket: DevicePacket|undefined, sensor_id: string})
 {
     const [sensorName, setSensorName] = useState("")
+    const [dialogOpen, setDialogOpen] = useState(false)
     useEffect(() => {
         if (devicePacket == null) {return;}
 
@@ -316,9 +316,17 @@ function SensorCard({devicePacket, sensor_id}: {devicePacket: DevicePacket|undef
                     Alias: {sensorName}
                 </Typography>
                 {devicePacket && <Chip label={reading+"°C"}/>}
-                <Button>Calibrate</Button>
+                <Button onClick={() => setDialogOpen(true)}>Calibrate</Button>
             </CardContent>
         </Paper>
+        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+            <DialogTitle>Calibrate: {sensor_id} ({sensorName})</DialogTitle>
+            <TextField 
+            sx={{padding: 1}}
+            label="Temperature °C"
+            size="small"
+            />
+        </Dialog>
     </Card>
 }
 
@@ -571,7 +579,7 @@ function Prototype7()
             setSelectedDeviceData(null)
         }
         
-    }, [selectedDevice])
+    }, [selectedDevice, devicesData])
 
     return <Grid2 container spacing={2} sx={{margin: 2}}>
         <DevicesPanel 
