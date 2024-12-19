@@ -315,7 +315,7 @@ function SensorCard({devicePacket, sensor_id, post_to_device}:
     {
         post_to_device({
             action: "update_sensor_calibration",
-            name: sensor_id,
+            name: sensorName,
             temp: sensorCalibration
         })
     }

@@ -184,6 +184,13 @@ async function start_service(logger: Logger)
         }
     }
 
+    setInterval(() => {
+        Object.keys(sensors).map(sensor_name => {
+            const sensor: TempSensor = sensors[sensor_name]
+            sensor.read()
+        })
+    })
+
     return true
 }
 
