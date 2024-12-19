@@ -184,6 +184,7 @@ async function start_service(logger: Logger)
         }
     }
 
+    logger.info("setting reada interval")
     setInterval(() => {
         logger.info("Attempting to read sensors")
         const read_start = Date.now()
@@ -192,7 +193,7 @@ async function start_service(logger: Logger)
             sensor.read()
         })
         logger.info(`read refresh completed in ${Date.now()-read_start}ms`)
-    }, 10000)
+    }, 1000)
 
     return true
 }
