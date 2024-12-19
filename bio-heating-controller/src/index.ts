@@ -15,6 +15,7 @@ import Experiment from './experiment.js';
 import generate_device_packet from './device_packet.js';
 import path from "path";
 import { fileURLToPath } from 'url';
+import { readFileSync } from 'fs';
 
 const VERSION_NAME = "v1.8"
 
@@ -185,7 +186,8 @@ function write_device_success()
         ip_address: device_ip,
         device_id: env.DEVICE_ID,
         server_up_time: Timestamp.now(),
-        last_activity: Timestamp.now()
+        last_activity: Timestamp.now(),
+        version: readFileSync(main_dir+"/version.txt")
     }
     return setDoc(device_doc, device_data)
 }

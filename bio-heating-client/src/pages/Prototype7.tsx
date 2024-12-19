@@ -42,7 +42,8 @@ interface DeviceData {
     ip_address: string,
     last_activity: Timestamp,
     server_up_time: Timestamp,
-    is_active: boolean
+    is_active: boolean,
+    version: string
 }
 
 interface DevicePacket {
@@ -275,6 +276,15 @@ function DeviceDataPanel({selectedDeviceData, selectedDevice}: {selectedDeviceDa
                 </Typography>
                 <Typography component="div">
                     {selectedDeviceData && selectedDeviceData.active_url}
+                </Typography>
+
+                {/* Version */}
+                <Divider />
+                <Typography sx={{ color: 'text.secondary', fontSize: 14, marginTop: 1 }}>
+                    Version
+                </Typography>
+                <Typography component="div">
+                    {selectedDeviceData && selectedDeviceData.version}
                 </Typography>
             </CardContent>
         </Paper>
