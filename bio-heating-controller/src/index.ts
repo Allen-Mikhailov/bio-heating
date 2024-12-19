@@ -16,6 +16,7 @@ import generate_device_packet from './device_packet.js';
 import path from "path";
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
+import { shutdown as log4js_shutdown } from 'log4js';
 
 const VERSION_NAME = "v1.8"
 
@@ -51,9 +52,9 @@ const service_update = () => exec(`sudo chmod +x ./update.sh ; sudo -u bioheatin
 
     setTimeout(service_restart, 1000)
 })
-const service_restart = () => exec("sudo systemctl restart bioheating-app")
-const server_restart = () => exec("sudo shutdown now -r")
-const server_shutdown = () => exec("sudo shutdown now")
+const service_restart = () => {log4js_shutdown() ; exec("sudo systemctl restart bioheating-app")}
+const server_restart = () => {log4js_shutdown() ; exec("sudo shutdown now -r")}
+const server_shutdown = () => {log4js_shutdown() ; exec("sudo shutdown now")}
 
 const change_env_property = ({property, value}: {property:string, value: string}) => update_env_property(property, value)
 
@@ -201,6 +202,7 @@ function startup_fail(failed_actions: string[])
      email_block += startup_memory.join("<br>")
 
      send_email(`FAILED startup of device ${env.DEVICE_ID}`, email_block)
+     log4js_shutdown()
      process.exitCode = 1;
 }
 
