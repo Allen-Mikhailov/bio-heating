@@ -189,7 +189,7 @@ async function start_service(logger: Logger)
             const sensor: TempSensor = sensors[sensor_name]
             sensor.read()
         })
-    })
+    }, 10000)
 
     return true
 }
