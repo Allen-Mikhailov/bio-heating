@@ -16,7 +16,7 @@ import generate_device_packet from './device_packet.js';
 import path from "path";
 import { fileURLToPath } from 'url';
 
-const VERSION_NAME = "v1.7"
+const VERSION_NAME = "v1.8"
 
 const startup_process = new CustomProcess("Startup")
 startup_process.set_logger(startup_logger)
