@@ -281,10 +281,12 @@ function DeviceDataPanel({selectedDeviceData, selectedDevice}: {selectedDeviceDa
     </Card>
 }
 
-function SensorCard({devicePacket, sensor_id}: {devicePacket: DevicePacket|undefined, sensor_id: string})
+function SensorCard({devicePacket, sensor_id, post_to_device}: 
+    {devicePacket: DevicePacket|undefined, sensor_id: string, post_to_device: (data: any) => void})
 {
     const [sensorName, setSensorName] = useState("")
     const [dialogOpen, setDialogOpen] = useState(false)
+    const [sensorCalibration, setSensorCalibration] = useState("")
     useEffect(() => {
         if (devicePacket == null) {return;}
 
@@ -302,11 +304,21 @@ function SensorCard({devicePacket, sensor_id}: {devicePacket: DevicePacket|undef
         if (!found_config_match)
         {
             setSensorName("NO ALIAS")
+            setSensorCalibration("0")
         }
     }, [sensor_id, devicePacket])
 
     let reading: number|undefined = devicePacket?.sensor_readings[sensorName]
     if (reading) {reading = Math.round(reading*100)/100}
+
+    function SetCalibration()
+    {
+        post_to_device({
+            action: "update_sensor_calibration",
+            name: sensor_id,
+            temp: sensorCalibration
+        })
+    }
 
     return <Card sx={{marginTop: 1}} variant="outlined" key={sensor_id}>
         <Paper elevation={4}>
@@ -316,7 +328,7 @@ function SensorCard({devicePacket, sensor_id}: {devicePacket: DevicePacket|undef
                     Alias: {sensorName}
                 </Typography>
                 {devicePacket && <Chip label={reading+"°C"}/>}
-                <Button onClick={() => setDialogOpen(true)}>Calibrate</Button>
+                <Button onClick={() => {setDialogOpen(true); setSensorCalibration(""+reading)}}>Calibrate</Button>
             </CardContent>
         </Paper>
         <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
@@ -325,12 +337,16 @@ function SensorCard({devicePacket, sensor_id}: {devicePacket: DevicePacket|undef
             sx={{padding: 1}}
             label="Temperature °C"
             size="small"
+            type="number"
+            value={sensorCalibration}
+            onChange={(e) => setSensorCalibration(e.target.value)}
             />
+            <Button onClick={SetCalibration} size="small" variant="outlined" sx={{margin: 1}}>Calibrate</Button>
         </Dialog>
     </Card>
 }
 
-function SensorPanel({devicePacket}: {devicePacket: DevicePacket|undefined})
+function SensorPanel({devicePacket, post_to_device}: {devicePacket: DevicePacket|undefined, post_to_device: (data: any) => void})
 {
     return <Card variant="outlined" sx={{height: "100%"}}>
         <Paper>
@@ -339,7 +355,8 @@ function SensorPanel({devicePacket}: {devicePacket: DevicePacket|undefined})
                     Sensors
                 </Typography>
                 {devicePacket && devicePacket.all_device_sensors.map((sensor_id) => {
-                    return <SensorCard devicePacket={devicePacket} sensor_id={sensor_id} key={sensor_id}/>
+                    return <SensorCard devicePacket={devicePacket} sensor_id={sensor_id} 
+                    key={sensor_id} post_to_device={post_to_device}/>
                 })}
             </CardContent>
         </Paper>
@@ -596,7 +613,7 @@ function Prototype7()
             selectedDeviceData={selectedDeviceData}
         />
         <DeviceActionsPanel post_to_device={post_to_device} selectedDeviceData={selectedDeviceData}/>
-        <SensorPanel devicePacket={devicePacket}/>
+        <SensorPanel devicePacket={devicePacket} post_to_device={post_to_device}/>
         <ExperimentDisplayPanel/>
     </Grid2>
 }

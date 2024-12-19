@@ -56,6 +56,7 @@ const change_env_property = ({property, value}: {property:string, value: string}
 
 function update_sensor_calibration({name, temp}:{name:string, temp:number})
 {
+    logger.info(`Calibrating Sensor id: ${name}, temp: ${temp}`)
     sensors[name].calibrate(temp)
 }
 
