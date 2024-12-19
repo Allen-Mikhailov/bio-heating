@@ -16,6 +16,8 @@ import generate_device_packet from './device_packet.js';
 import path from "path";
 import { fileURLToPath } from 'url';
 
+const VERSION_NAME = "v1.7"
+
 const startup_process = new CustomProcess("Startup")
 startup_process.set_logger(startup_logger)
 
@@ -213,7 +215,7 @@ async function start_device() {
         startup_fail(["write_device_opening_to_firebase"])
     }
 
-    send_email("Device Online", `The Device "${env.DEVICE_ID}" is online and running smoothly v1.6`)
+    send_email("Device Online", `The Device "${env.DEVICE_ID}" is online and running smoothly ${VERSION_NAME}`)
 }
 
 start_device();
