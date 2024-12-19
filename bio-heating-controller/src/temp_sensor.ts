@@ -185,10 +185,12 @@ async function start_service(logger: Logger)
     }
 
     setInterval(() => {
+        const read_start = Date.now()
         Object.keys(sensors).map(sensor_name => {
             const sensor: TempSensor = sensors[sensor_name]
             sensor.read()
         })
+        logger.info(`read refresh completed in ${Date.now()-read_start}ms`)
     }, 10000)
 
     return true
