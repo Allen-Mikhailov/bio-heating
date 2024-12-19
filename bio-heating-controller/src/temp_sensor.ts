@@ -185,6 +185,7 @@ async function start_service(logger: Logger)
     }
 
     setInterval(() => {
+        logger.info("Attempting to read sensors")
         const read_start = Date.now()
         Object.keys(sensors).map(sensor_name => {
             const sensor: TempSensor = sensors[sensor_name]
