@@ -18,7 +18,6 @@ import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
 import log4js from 'log4js';
 
-
 const VERSION_NAME = readFileSync(main_dir+"/version.txt").toString()
 
 const startup_process = new CustomProcess("Startup")
@@ -47,12 +46,13 @@ const options = {
 logger.info("maindir: "+main_dir) // test
 
 const update_command = `git checkout . ; sudo -u bioheating ./update.sh ;`
-const service_update = () => exec(update_command, options, async (error, stdout) => {
+const service_update = () => exec(update_command, options, async (error, stdout, stderr) => {
 
     logger.info("Update stdout: "+stdout)
     logger.info("Update error: "+error)
+    logger.info("Update stderr: "+stderr)
 
-    setTimeout(service_restart, 1000)
+    // setTimeout(service_restart, 1000)
 })
 const service_restart = () => {log4js.shutdown() ; exec("sudo systemctl restart bioheating-app")}
 const server_restart = () => {log4js.shutdown() ; exec("sudo shutdown now -r")}
