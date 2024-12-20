@@ -55,9 +55,9 @@ const service_update = () => exec(update_command, options, async (error, stdout,
 
     // setTimeout(service_restart, 1000)
 })
-const service_restart = () => {log4js.shutdown() ; exec("sudo systemctl restart bioheating-app")}
-const server_restart  = () => {log4js.shutdown() ; exec("sudo shutdown now -r")}
-const server_shutdown = () => {log4js.shutdown() ; exec("sudo shutdown now")}
+const service_restart = () => { log4js.shutdown() ; exec("sudo systemctl restart bioheating-app") }
+const server_restart  = () => { log4js.shutdown() ; exec("sudo shutdown now -r") }
+const server_shutdown = () => { log4js.shutdown() ; exec("sudo shutdown now") }
 
 const change_env_property = ({property, value}: {property:string, value: string}) => update_env_property(property, value)
 
