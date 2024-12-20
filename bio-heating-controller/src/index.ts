@@ -19,7 +19,7 @@ import { readFileSync } from 'fs';
 import log4js from 'log4js';
 
 
-const VERSION_NAME = "v1.8"
+const VERSION_NAME = readFileSync("/version.txt").toString()
 
 const startup_process = new CustomProcess("Startup")
 startup_process.set_logger(startup_logger)
@@ -189,7 +189,7 @@ function write_device_success()
         device_id: env.DEVICE_ID,
         server_up_time: Timestamp.now(),
         last_activity: Timestamp.now(),
-        version: readFileSync(main_dir+"/version.txt").toString()
+        version: VERSION_NAME
     }
     return setDoc(device_doc, device_data)
 }
