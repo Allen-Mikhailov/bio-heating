@@ -19,7 +19,7 @@ import { readFileSync } from 'fs';
 import log4js from 'log4js';
 
 
-const VERSION_NAME = readFileSync("./version.txt").toString()
+const VERSION_NAME = readFileSync(main_dir+"/version.txt").toString()
 
 const startup_process = new CustomProcess("Startup")
 startup_process.set_logger(startup_logger)
