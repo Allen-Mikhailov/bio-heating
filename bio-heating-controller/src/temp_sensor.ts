@@ -186,13 +186,13 @@ async function start_service(logger: Logger)
 
     logger.info("setting reada interval")
     setInterval(() => {
-        logger.info("Attempting to read sensors")
+        // logger.info("Attempting to read sensors")
         const read_start = Date.now()
         Object.keys(sensors).map(sensor_name => {
             const sensor: TempSensor = sensors[sensor_name]
             sensor.read()
         })
-        logger.info(`read refresh completed in ${Date.now()-read_start}ms`)
+        // logger.info(`read refresh completed in ${Date.now()-read_start}ms`)
     }, 1000)
 
     return true

@@ -4,7 +4,7 @@
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-sudo git pull origin master
+echo "Git pull: $(sudo git pull origin master)"
 
 # Verify node, npm, and tsc versions
 echo "Node version: $(node -v)"
