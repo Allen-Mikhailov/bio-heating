@@ -46,7 +46,7 @@ const options = {
 
 logger.info("maindir: "+main_dir) // test
 
-const update_command = `git checkout . ; sudo chmod +x ./update.sh ; sudo -u bioheating ./update.sh ; git checkout .`
+const update_command = `git checkout . ; sudo -u bioheating ./update.sh ;`
 const service_update = () => exec(update_command, options, async (error, stdout) => {
 
     logger.info("Update stdout: "+stdout)
