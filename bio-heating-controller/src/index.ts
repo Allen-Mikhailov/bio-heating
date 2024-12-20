@@ -45,7 +45,7 @@ const options = {
 
 logger.info("maindir: "+main_dir) // test
 
-const update_command = `sudo -u bioheating git pull origin master ;`
+const update_command = `sudo git pull origin master ;`
     + `/home/bioheating/.nvm/versions/node/v23.3.0/bin/npx tsc --build`
 const service_update = () => exec(update_command, options, async (error, stdout, stderr) => {
 
