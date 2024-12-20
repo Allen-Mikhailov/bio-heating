@@ -16,7 +16,8 @@ import generate_device_packet from './device_packet.js';
 import path from "path";
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
-import { shutdown as log4js_shutdown } from 'log4js';
+import log4js from 'log4js';
+
 
 const VERSION_NAME = "v1.8"
 
@@ -52,9 +53,9 @@ const service_update = () => exec(`sudo chmod +x ./update.sh ; sudo -u bioheatin
 
     setTimeout(service_restart, 1000)
 })
-const service_restart = () => {log4js_shutdown() ; exec("sudo systemctl restart bioheating-app")}
-const server_restart = () => {log4js_shutdown() ; exec("sudo shutdown now -r")}
-const server_shutdown = () => {log4js_shutdown() ; exec("sudo shutdown now")}
+const service_restart = () => {log4js.shutdown() ; exec("sudo systemctl restart bioheating-app")}
+const server_restart = () => {log4js.shutdown() ; exec("sudo shutdown now -r")}
+const server_shutdown = () => {log4js.shutdown() ; exec("sudo shutdown now")}
 
 const change_env_property = ({property, value}: {property:string, value: string}) => update_env_property(property, value)
 
@@ -188,22 +189,22 @@ function write_device_success()
         device_id: env.DEVICE_ID,
         server_up_time: Timestamp.now(),
         last_activity: Timestamp.now(),
-        version: readFileSync(main_dir+"/version.txt")
+        version: readFileSync(main_dir+"/version.txt").toString()
     }
     return setDoc(device_doc, device_data)
 }
 
 function startup_fail(failed_actions: string[])
 {
-     // Will have already logged the failure just sending an email now
-     let email_block = ""
-     email_block += `These actions failed: ${failed_actions.join()}<br><br>`
-     email_block += `Logs<br><br>`
-     email_block += startup_memory.join("<br>")
+    // Will have already logged the failure just sending an email now
+    let email_block = ""
+    email_block += `These actions failed: ${failed_actions.join()}<br><br>`
+    email_block += `Logs<br><br>`
+    email_block += startup_memory.join("<br>")
 
-     send_email(`FAILED startup of device ${env.DEVICE_ID}`, email_block)
-     log4js_shutdown()
-     process.exitCode = 1;
+    send_email(`FAILED startup of device ${env.DEVICE_ID}`, email_block)
+    log4js.shutdown()
+    process.exitCode = 1;
 }
 
 async function start_device() {

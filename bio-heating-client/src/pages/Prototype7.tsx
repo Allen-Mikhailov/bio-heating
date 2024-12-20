@@ -548,6 +548,7 @@ function Prototype7()
                     data.is_active = false
                 }).finally(() => {
                     data.device_id = data.device_id || "ERROR: NO DEVICE ID"
+                    console.log( data.device_id, data)
                     devices_data.push(data)
                 }))
                 
@@ -568,11 +569,11 @@ function Prototype7()
     useEffect(() => {
         function requestDevicePacket()
         {
-            console.log("Requesting", selectedDeviceData)
+            console.log("Requesting")
             if (selectedDeviceData == null) {return;}
             fetch(selectedDeviceData.active_url+"/device_packet").then(async response => {
                 const json = await response.json()
-                console.log(json)
+                console.log("Recieved Device Packet", json)
                 setDevicePacket(json as DevicePacket)
             }).catch(e => {
                 console.log("Failed to get device packet", e)
