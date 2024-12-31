@@ -3,10 +3,10 @@ import { useState, useEffect } from "react"
 import { LineChart } from "@mui/x-charts"
 
 
-import { db } from "../modules/firebase"
+import { db } from "../../modules/firebase"
 import { query, getDocs } from "firebase/firestore"
 
-import { convert_data, generate_csv } from "../modules/data_helpers"
+import { convert_data, generate_csv } from "../../modules/data_helpers"
 import dayjs from "dayjs"
 import Prototype5 from "./Prototype5"
 

@@ -1,9 +1,9 @@
 import { Timestamp } from "firebase/firestore"
 import { useState, useEffect } from "react"
 
-import { generate_random_temp_example } from "../modules/examples"
+import { generate_random_temp_example } from "../../modules/examples"
 
-import { convert_data } from "../modules/data_helpers"
+import { convert_data } from "../../modules/data_helpers"
 
 function Prototype2()
 {

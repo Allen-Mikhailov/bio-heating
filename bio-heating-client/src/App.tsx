@@ -8,12 +8,12 @@ import './App.css'
 
 import HomePage from './pages/HomePage'
 import Prototypes from './pages/Prototypes.tsx'
-import Prototype2 from './pages/Prototype2.tsx'
-import Prototype3 from './pages/Prototype3.tsx'
-import Prototype4 from './pages/Prototype4.tsx'
-import Prototype5 from './pages/Prototype5.tsx';
-import Prototype6 from './pages/Prototype6.tsx';
-import Prototype7 from './pages/Prototype7.tsx';
+import Prototype2 from './pages/Prototypes/Prototype2.tsx'
+import Prototype3 from './pages/Prototypes/Prototype3.tsx'
+import Prototype4 from './pages/Prototypes/Prototype4.tsx'
+import Prototype5 from './pages/Prototypes/Prototype5.tsx';
+import Prototype6 from './pages/Prototypes/Prototype6.tsx';
+import Prototype7 from './pages/Prototypes/Prototype7.tsx';
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';

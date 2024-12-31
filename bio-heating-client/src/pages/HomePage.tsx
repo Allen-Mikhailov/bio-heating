@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom"
 
-import Prototype7 from "./Prototype7"
+import Panels from "./Panels"
 
 function HomePage()
 {
     return <div>
-        <Prototype7/>
+        <Panels/>
     </div>
 }
 
