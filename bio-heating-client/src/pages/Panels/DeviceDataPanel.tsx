@@ -1,5 +1,5 @@
 import { Card, CardContent, Divider, Paper, Typography } from "@mui/material"
-import { DeviceData } from "../../interfaces"
+import { DeviceData } from "../../../../shared/src/interfaces"
 
 function DeviceDataPanel({selectedDeviceData, selectedDevice}: 
     {selectedDeviceData: DeviceData|null, selectedDevice: string|null})

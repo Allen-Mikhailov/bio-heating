@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react"
-import { DeviceData, DevicePacket } from "../../interfaces"
+import { DeviceData, DevicePacket } from "../../../../shared/src/interfaces"
 import { Button, Card, CardContent, List, ListItem, Paper, TextField, Typography } from "@mui/material"
 
 const properties: {[property: string]: string} = {
-    "EXPERIMENT_NAME": "Experiment Name",
     "EMAIL": "Email Sender",
     "EMAIL_TARGET": "Email Target"
 }

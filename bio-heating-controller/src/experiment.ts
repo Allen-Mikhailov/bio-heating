@@ -3,6 +3,10 @@ import { sensors, TempSensor } from "./temp_sensor.js"
 import { readFileSync }from "fs"
 import path from "path";
 import { fileURLToPath } from 'url';
+import { arrayUnion, collection, doc, getDoc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { db } from "./firebase.js";
+import { DeviceMark, ExperimentData } from "../../shared/src/interfaces.js";
+import { env } from "./env_handler.js";
 
 interface ExperimentSensorConfig {
     [experiment_sensor_name: string]: string
@@ -11,12 +15,14 @@ interface ExperimentSensorConfig {
 class Experiment
 {
     name: string;
+    experiment_id: string;
     logger: Logger;
     sensor_config: ExperimentSensorConfig;
     sensors: {[key: string]: TempSensor}
-    constructor(name: string, logger: Logger)
+    constructor(name: string, experiment_id: string, logger: Logger)
     {
         this.name = name
+        this.experiment_id = experiment_id
         this.logger = logger
 
         // {sensor_name_for_experiment: sensor_name}
@@ -82,6 +88,35 @@ class Experiment
         }
 
         return true
+    }
+
+    async push_start(): Promise<boolean>
+    {
+        const doc_obj = doc(db, "experiments", this.experiment_id)
+        const doc_snapshot = await getDoc(doc_obj)
+
+        const mark: DeviceMark = {
+            deviceId: env.DEVICE_ID,
+            startTime: Timestamp.now()
+        }
+
+        if (doc_snapshot.exists())
+        {
+            // Is resuming
+            updateDoc(doc_obj, {
+                marks: arrayUnion(mark)
+            })
+        } else {
+            // Is creating
+            const experimentData: ExperimentData = {
+                creationDate: Timestamp.now(),
+                experimentType: this.name,
+                marks: [mark]
+            }
+            setDoc(doc_obj, experimentData)
+        }
+        
+        return true;
     }
 
     stop()

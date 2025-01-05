@@ -79,7 +79,7 @@ function LegacyExperimentDisplayPanel()
         <Paper>
             <CardContent>
                 <Typography variant="h5">
-                    Experiment Data
+                    Legacy Experiment Data
                 </Typography>
                 <div style={{display: "flex", alignItems: "center"}}>
                 <Paper elevation={4} sx={{padding: 1, marginTop: 1}}>

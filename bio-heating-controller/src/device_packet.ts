@@ -1,11 +1,10 @@
-import { env } from "./env_handler.js";
+import { env, get_env } from "./env_handler.js";
 import { valid_dirents as raw_sensors, sensors, SENSOR_CONFIG_PATH } from "./temp_sensor.js";
 import { readFileSync } from 'fs';
 import experiments from "./all_experiments.js";
-import { get_env } from "./env_handler.js";
-import Experiment from "./experiment.js";
 import path from "path"
 import { main_dir } from "./env_handler.js";
+import { DevicePacket, DeviceState } from "../../shared/src/interfaces"
 
 const PROTECTED_ENV_VALUES = [
     "SENDGRID_API_KEY",
@@ -13,14 +12,15 @@ const PROTECTED_ENV_VALUES = [
     "NGROK_AUTHTOKEN"
 ]
 
-function generate_device_packet(): string
+function generate_device_packet(deviceState: DeviceState): string
 {
-    const packet: any = {
+    const packet: DevicePacket = {
         all_device_sensors: [],
         sensor_config: {},
         simulation_sensor_configs: {},
         env: {},
-        sensor_readings: {}
+        sensor_readings: {},
+        device_state: deviceState
     }
 
     // Sensors

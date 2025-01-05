@@ -1,6 +1,6 @@
-import { Button, Card, CardContent, Divider, Grid2, Paper, Snackbar, Tab, Tabs, TextField, Typography } from "@mui/material"
-import { useState } from "react"
-import { DeviceData, ExperimentMap } from "../../interfaces"
+import { Box, Button, Card, CardContent, Divider, Grid2, Paper, Snackbar, Tab, Tabs, TextField, Typography } from "@mui/material"
+import { useEffect, useState } from "react"
+import { DeviceData, ExperimentMap } from "../../../../shared/src/interfaces"
 
 const experiment_types = ["simulation"]
 
@@ -10,6 +10,13 @@ function ExperimentPanel({post_to_device, selectedDeviceData, experiments}:
     const [snackOpen, setSnackOpen] = useState(false)
     const [snackMessage, setSnackMessage] = useState("")
     const [tab, setTab] = useState(0)
+    const [defaultExperimentId, setDefaultExperimentId] = useState("")
+    const [experimentId, setExperimentId] = useState("")
+    const [experimentType, setExperimentType] = useState(experiment_types[0])
+
+    useEffect(() => {
+        setDefaultExperimentId("NewExperiment"+Math.floor(Math.random()*100))
+    }, [])
 
     function open_snack(snack: string)
     {
@@ -27,6 +34,21 @@ function ExperimentPanel({post_to_device, selectedDeviceData, experiments}:
     const offline = selectedDeviceData == null || !selectedDeviceData.is_active
     const cardSX ={height: "100%", opacity: offline ? 0.5 : 1,pointerEvents:offline ? "none" : "auto"}
 
+    function startExperiment()
+    {
+        if (experimentId == "")
+            return open_snack("The experiment id cannot be empty")
+        else if (experiments[experimentId] != null)
+            return open_snack(`The experiment id "${experimentId}" is already in use. Maybe try to resume the experiment`) 
+
+
+        device_post({
+            "action": "start_experiment", 
+            "new_experiment_type": experimentType, 
+            "experiment_id": experimentId
+        }, `Started Experiment "${experimentId}"`)
+    }
+
     return <><Card variant="outlined" sx={cardSX}><Paper>
         <CardContent>
             <Typography variant="h5" component="div">
@@ -38,9 +60,42 @@ function ExperimentPanel({post_to_device, selectedDeviceData, experiments}:
             </Tabs>
 
             {/* New Experiment */}
-            {tab == 0 && <>
+            {tab == 0 && <Box sx={{marginTop: 1.5}}>
+            <TextField
+                    size="small"
+                    sx={{width: "100%"}}
+                    label="Experiment Id"
+                    value={experimentId}
+                    required
+                    onChange={(e) => setExperimentId(e.currentTarget.value)}
+                />
+            <Grid2 container spacing={2} sx={{width: "100%", marginTop: 2}}>
                 
-            </>}
+                <Grid2 size={6}>
+                    <TextField
+                        id="experiment-picker"
+                        select
+                        size="small"
+                        sx={{width: "100%"}}
+                        label="Experiment Type"
+                        defaultValue="simulation"
+                        slotProps={{
+                            select: {
+                            native: true,
+                            },
+                        }}>
+                            {experiment_types.map((option) => (
+                                <option key={option} value={option}>
+                                {option}
+                                </option>
+                            ))}
+                        </TextField>
+                    </Grid2>
+                <Grid2 size={6}>
+                    <Button variant="outlined" sx={{width: "100%"}} onClick={startExperiment}>START</Button>
+                </Grid2>
+            </Grid2>
+            </Box>}
 
             {/* Resume Experiment */}
             {tab == 1 && <>

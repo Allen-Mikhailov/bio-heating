@@ -41,9 +41,9 @@ class SimulationExperiment extends Experiment
     running = false;
     promise: Promise<void>|undefined;
     stop_resolve: (() => void) | null = null;
-    constructor(logger: Logger)
+    constructor(experiment_id: string, logger: Logger)
     {
-        super("simulation", logger)
+        super("simulation", experiment_id, logger)
         this.packet = generate_new_packet()
     }
 
@@ -126,6 +126,7 @@ class SimulationExperiment extends Experiment
         })
 
         this.running = true
+        this.push_start()
 
         
         return true

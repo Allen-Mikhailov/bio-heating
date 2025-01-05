@@ -17,6 +17,7 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
 import log4js from 'log4js';
+import { DeviceState } from '../../shared/src/interfaces.js';
 
 const VERSION_NAME = readFileSync(main_dir+"/version.txt").toString()
 
@@ -27,8 +28,11 @@ let active_url: string | undefined
 let device_ip: string | undefined
 
 // State
-let running_experiment: boolean = false
-let experiment_type: string = "undefined"
+let deviceState: DeviceState = {
+    runningExperiment: false,
+    runningExperimentType: "",
+    runningExperimentId: ""
+}
 let experiment_obj: Experiment | null
 
 function update_env_property(property: string, value: string)
@@ -67,30 +71,34 @@ function update_sensor_calibration({name, temp}:{name:string, temp:number})
     sensors[name].calibrate(temp)
 }
 
-const start_experiment = ({new_experiment_type}: {new_experiment_type: string}) => {
-    if (running_experiment) {return;}
+const start_experiment = ({experiment_type, experiment_id}: {experiment_type: string, experiment_id: string}) => {
+    if (deviceState.runningExperiment) {
+        logger.error(`Failed to start Experiment ${experiment_type} as an experiment is already running`)
+        return;
+    }
 
-    if (experiments[new_experiment_type] == null)
+    if (experiments[experiment_type] == null)
     {
-        logger.error(`Failed to start Experiment ${new_experiment_type} as it is not a valid experiment type`)
+        logger.error(`Failed to start Experiment ${experiment_type} as it is not a valid experiment type`)
         return
     }
-    experiment_type = new_experiment_type
-    experiment_obj = new experiments[new_experiment_type](logger)
+    deviceState.runningExperimentId = experiment_id
+    deviceState.runningExperimentType = experiment_type
+    experiment_obj = new experiments[experiment_type](experiment_id, logger)
     experiment_obj?.start()
-    running_experiment = true
+    deviceState.runningExperiment = true
     
     logger.info("Experiment Started")
 }
 const stop_experiment = () => {
-    if (running_experiment && experiment_obj != null)
+    if (deviceState.runningExperiment && experiment_obj != null)
     {
         logger.info("Stopping experiment stopped")
         experiment_obj.stop()
         set_heating(false)
         logger.info("Experiment Stopped")
         experiment_obj = null
-        running_experiment = false
+        deviceState.runningExperiment = false
     }
     
 }
@@ -109,7 +117,7 @@ server.add_post_action("start_experiment", start_experiment)
 server.add_post_action("stop_experiment", stop_experiment)
 
 // GET actions
-server.add_get_action("/device_packet", generate_device_packet)
+server.add_get_action("/device_packet", () => generate_device_packet(deviceState))
 
 async function server_start()
 {

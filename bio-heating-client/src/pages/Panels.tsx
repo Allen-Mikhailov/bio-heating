@@ -21,7 +21,7 @@ import {
     Typography 
 } from "@mui/material"
 import { axisClasses } from '@mui/x-charts/ChartsAxis';
-import { DeviceData, DevicePacket, ExperimentData, ExperimentMap, SensorConfig } from "../interfaces";
+import { DeviceData, DevicePacket, ExperimentData, ExperimentMap, SensorConfig } from "../../../shared/src/interfaces.js";
 
 import { db } from "../modules/firebase"
 import { query, getDocs } from "firebase/firestore"
@@ -52,7 +52,7 @@ function Panels()
         "Device Properties": true,
         "Device Sensors": false,
         "Device Actions": true,
-        "Legacy Experiment Display": true,
+        "Legacy Experiment Display": false,
         "Experiment Display": true,
         "Experiment Controls": true,
     })
@@ -126,11 +126,6 @@ function Panels()
             
         })
         await Promise.all(fetches)
-        devices_data.sort((a: DeviceData, b:DeviceData) => {
-            const x = a.device_id.toLowerCase();
-            const y = b.device_id.toLowerCase();
-            return x < y ? -1 : x > y ? 1 : 0;
-        })
         setDevicesData(devices_data)
     }
 

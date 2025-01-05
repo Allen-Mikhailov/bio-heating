@@ -6,6 +6,13 @@ interface SensorConfig {
     optional: boolean
 }
 
+interface DeviceState
+{
+    runningExperiment: boolean,
+    runningExperimentId: string,
+    runningExperimentType: string
+}
+
 interface DeviceData {
     active_url: string,
     device_id: string,
@@ -21,7 +28,8 @@ interface DevicePacket {
     sensor_config: {[key: string]: SensorConfig},
     simulation_sensor_configs: {[key: string]: string},
     env: {[key: string]: string},
-    sensor_readings: {[key: string]: number}
+    sensor_readings: {[key: string]: number},
+    device_state: DeviceState
 }
 
 interface DeviceMark {
@@ -37,4 +45,4 @@ interface ExperimentData {
 
 type ExperimentMap = { [key: string]: ExperimentData };
 
-export type { SensorConfig, DeviceData, DevicePacket, DeviceMark, ExperimentData, ExperimentMap }
+export type { SensorConfig, DeviceData, DevicePacket, DeviceMark, ExperimentData, ExperimentMap, DeviceState }

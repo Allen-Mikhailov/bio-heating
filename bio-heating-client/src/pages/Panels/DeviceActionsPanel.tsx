@@ -1,6 +1,6 @@
 import { Button, Card, CardContent, Divider, Grid2, Paper, Snackbar, TextField, Typography } from "@mui/material"
 import { useState } from "react"
-import { DeviceData } from "../../interfaces"
+import { DeviceData } from "../../../../shared/src/interfaces"
 
 const experiment_types = ["simulation"]
 

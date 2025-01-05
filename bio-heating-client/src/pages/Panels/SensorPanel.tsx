@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DevicePacket, SensorConfig } from "../../interfaces";
+import { DevicePacket, SensorConfig } from "../../../../shared/src/interfaces";
 import { Button, Card, CardContent, Chip, Dialog, DialogTitle, Paper, TextField, Typography } from "@mui/material";
 
 function SensorCard({devicePacket, sensor_id, post_to_device}: 
