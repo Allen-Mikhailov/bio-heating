@@ -18,7 +18,7 @@ const PROTECTED_ENV_VALUES = [
 async function get_memory_usage(logger: Logger): Promise<number>
 {
     const promise = new Promise<string>((resolve, reject) => {
-        exec(`free | awk '/Mem:/ {printf "%.2f\n", $3/$2 * 100.0}'`, (error, stdout, stderr) => {
+        exec(`free | awk '/Mem:/ {printf "%.2f\\n", $3/$2 * 100.0}'`, (error, stdout, stderr) => {
             if (error) {
                 reject(error);
             }
