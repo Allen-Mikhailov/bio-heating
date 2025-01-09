@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import experiments from "./all_experiments.js";
 import path from "path"
 import { main_dir } from "./env_handler.js";
-import { DevicePacket, DeviceState } from "../../shared/src/interfaces"
+import { DevicePacket, DeviceState } from "@shared/src/interfaces"
 import { exec } from "child_process";
 import { Logger } from "log4js";
 import { logger } from "./logger.js";

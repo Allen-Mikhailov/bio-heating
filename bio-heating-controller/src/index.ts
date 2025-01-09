@@ -17,7 +17,7 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
 import log4js from 'log4js';
-import { DeviceState } from '../../shared/src/interfaces.js';
+import { DeviceState } from '@shared/src/interfaces.js';
 
 const VERSION_NAME = readFileSync(main_dir+"/version.txt").toString()
 

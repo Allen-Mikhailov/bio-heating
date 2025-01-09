@@ -9,8 +9,11 @@
     "esModuleInterop": true,           // Enable interoperability for CommonJS modules
     "skipLibCheck": true,              // Skip type-checking for library files
     "resolveJsonModule": true,         // Enable importing JSON files
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../shared/*"],
   "exclude": ["node_modules"]
 }
