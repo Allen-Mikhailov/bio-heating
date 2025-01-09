@@ -14,7 +14,7 @@ class ActionServer
 {
     port: number;
     logger: Logger;
-    get_actions: {[key: string]: () => string}
+    get_actions: {[key: string]: () => Promise<string>}
     post_actions: {[key: string]:  (data: any) => void}
 
     constructor(logger: Logger, port: number)
@@ -59,7 +59,7 @@ class ActionServer
         })
     }
 
-    get_request(req: http.IncomingMessage, res: http.ServerResponse)
+    async get_request(req: http.IncomingMessage, res: http.ServerResponse)
     {
         const name: string = req.url || ""
         if (!this.get_actions[name])
@@ -71,7 +71,7 @@ class ActionServer
         }
             
         try {
-            const response_data: string = this.get_actions[name]()
+            const response_data: string = await this.get_actions[name]()
             res.writeHead(200, {"Content-Type": "application/json"});
             res.end(response_data)
         } catch(e) {
@@ -118,7 +118,7 @@ class ActionServer
         this.post_actions[name] = callback
     }
 
-    add_get_action(name: string, callback: () => string )
+    add_get_action(name: string, callback: () => Promise<string> )
     {
         this.get_actions[name] = callback 
     }

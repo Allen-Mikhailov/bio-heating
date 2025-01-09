@@ -32,7 +32,6 @@ function generate_new_packet(): simulation_packet
     }
 }
 
-const experiment_packet_collection = collection(db, "experiment_data")
 class SimulationExperiment extends Experiment
 {
     packet: simulation_packet
@@ -57,6 +56,7 @@ class SimulationExperiment extends Experiment
     {
         this.logger.info("Ticking")
         // Reading Sensors
+        // TODO: Read async
         const control_temp = this.sensors["control"].read()
         const experimental_temp = this.sensors["experimental"].read()
 
@@ -93,7 +93,8 @@ class SimulationExperiment extends Experiment
         if (this.packet_additions >= parseFloat(env.PACKET_SIZE))
         {
             this.packet.upload_timestamp = Timestamp.now()
-            addDoc(experiment_packet_collection,this. packet)
+            const experiment_packet_collection = collection(db, "experiments", this.experiment_id, "packets")
+            addDoc(experiment_packet_collection, this.packet)
             this.packet = generate_new_packet()
 
             this.packet_additions = 0

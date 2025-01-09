@@ -7,19 +7,20 @@ const properties: {[property: string]: string} = {
     "EMAIL_TARGET": "Email Target"
 }
 
-function PropertyEditPanel({selectedDevice, post_to_device, devicePacket, selectedDeviceData}: 
+function PropertyEditPanel({selectedDevice, post_to_device, devicePacket, selectedDeviceData, sx}: 
     {
         selectedDevice: string|null, 
         post_to_device: (...any: any) => void, 
         devicePacket: DevicePacket|undefined, 
-        selectedDeviceData: DeviceData|null
+        selectedDeviceData: DeviceData|null,
+        sx: any
     })
 {
     const [newDevice, setNewDevice] = useState(true)
     const [deviceProperties, setDeviceProperties] = useState<{[key: string]: string}>({})
 
     const offline = selectedDeviceData == null || !selectedDeviceData.is_active
-    const cardSX ={height: "100%", opacity: offline ? 0.5 : 1,pointerEvents:offline ? "none" : "auto"}
+    const cardSX ={height: "100%", opacity: offline ? 0.5 : 1,pointerEvents:offline ? "none" : "auto", ...sx}
 
     useEffect(() => {
         setNewDevice(true)

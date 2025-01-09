@@ -1,11 +1,11 @@
 import { Card, CardContent, Divider, Paper, Typography } from "@mui/material"
 import { DeviceData } from "../../../../shared/src/interfaces"
 
-function DeviceDataPanel({selectedDeviceData, selectedDevice}: 
-    {selectedDeviceData: DeviceData|null, selectedDevice: string|null})
+function DeviceDataPanel({selectedDeviceData, selectedDevice, sx}: 
+    {selectedDeviceData: DeviceData|null, selectedDevice: string|null, sx: any})
 {
     const offline = selectedDeviceData == null || !selectedDeviceData.is_active
-    const cardSX ={height: "100%", opacity: offline ? 0.5 : 1,pointerEvents:offline ? "none" : "auto"}
+    const cardSX ={height: "100%", opacity: offline ? 0.5 : 1,pointerEvents:offline ? "none" : "auto", ...sx}
     return <Card variant="outlined" sx={cardSX}>
         <Paper>
             <CardContent>

@@ -117,7 +117,7 @@ server.add_post_action("start_experiment", start_experiment)
 server.add_post_action("stop_experiment", stop_experiment)
 
 // GET actions
-server.add_get_action("/device_packet", () => generate_device_packet(deviceState))
+server.add_get_action("/device_packet", async () => await generate_device_packet(deviceState))
 
 async function server_start()
 {

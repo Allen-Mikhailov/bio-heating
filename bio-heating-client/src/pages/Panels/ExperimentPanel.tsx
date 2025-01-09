@@ -1,17 +1,19 @@
-import { Box, Button, Card, CardContent, Divider, Grid2, Paper, Snackbar, Tab, Tabs, TextField, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, Divider, Grid2, MenuItem, Paper, Snackbar, Tab, Tabs, TextField, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
-import { DeviceData, ExperimentMap } from "../../../../shared/src/interfaces"
+import { DeviceData, DevicePacket, ExperimentMap } from "../../../../shared/src/interfaces"
 
 const experiment_types = ["simulation"]
 
-function ExperimentPanel({post_to_device, selectedDeviceData, experiments}: 
-    {post_to_device: (...any: any) => Promise<void>, selectedDeviceData: DeviceData|null, experiments: ExperimentMap})
+function ExperimentPanel({post_to_device, selectedDeviceData, experiments, devicePacket, sx}: 
+    {post_to_device: (...any: any) => Promise<void>, selectedDeviceData: DeviceData|null, 
+        experiments: ExperimentMap, devicePacket: DevicePacket|undefined, sx: any})
 {
     const [snackOpen, setSnackOpen] = useState(false)
     const [snackMessage, setSnackMessage] = useState("")
     const [tab, setTab] = useState(0)
     const [defaultExperimentId, setDefaultExperimentId] = useState("")
     const [experimentId, setExperimentId] = useState("")
+    const [selectedExperimentId, setSelectedExperimentId] = useState(Object.keys(experiments)[0])
     const [experimentType, setExperimentType] = useState(experiment_types[0])
 
     useEffect(() => {
@@ -32,7 +34,7 @@ function ExperimentPanel({post_to_device, selectedDeviceData, experiments}:
 
     const buttonSX = {width: "100%", marginTop: 1}
     const offline = selectedDeviceData == null || !selectedDeviceData.is_active
-    const cardSX ={height: "100%", opacity: offline ? 0.5 : 1,pointerEvents:offline ? "none" : "auto"}
+    const cardSX ={height: "100%", opacity: offline ? 0.5 : 1,pointerEvents:offline ? "none" : "auto", ...sx}
 
     function startExperiment()
     {
@@ -47,6 +49,20 @@ function ExperimentPanel({post_to_device, selectedDeviceData, experiments}:
             "new_experiment_type": experimentType, 
             "experiment_id": experimentId
         }, `Started Experiment "${experimentId}"`)
+    }
+
+    function resumeExperiment()
+    {
+        if (selectedExperimentId == "")
+            return open_snack("The experiment id cannot be empty")
+        else if (experiments[selectedExperimentId] == null)
+            return open_snack(`The experiment id "${experimentId}" is not an experiment`) 
+
+        device_post({
+            "action": "resume_experiment", 
+            "experiment_type": experimentType, 
+            "experiment_id": selectedExperimentId
+        }, `Resumed Experiment "${selectedExperimentId}"`)
     }
 
     return <><Card variant="outlined" sx={cardSX}><Paper>
@@ -78,16 +94,11 @@ function ExperimentPanel({post_to_device, selectedDeviceData, experiments}:
                         size="small"
                         sx={{width: "100%"}}
                         label="Experiment Type"
-                        defaultValue="simulation"
-                        slotProps={{
-                            select: {
-                            native: true,
-                            },
-                        }}>
+                        defaultValue="simulation">
                             {experiment_types.map((option) => (
-                                <option key={option} value={option}>
+                                <MenuItem key={option} value={option}>
                                 {option}
-                                </option>
+                                </MenuItem>
                             ))}
                         </TextField>
                     </Grid2>
@@ -98,9 +109,45 @@ function ExperimentPanel({post_to_device, selectedDeviceData, experiments}:
             </Box>}
 
             {/* Resume Experiment */}
-            {tab == 1 && <>
+            {tab == 1 && <Box sx={{marginTop: 1.5}}>
+            <TextField
+                        id="experiment-picker"
+                        select
+                        size="small"
+                        sx={{width: "100%"}}
+                        label="Experiment Id"
+                        defaultValue="simulation"
+                        value={selectedExperimentId}
+                        onChange={(e) => setSelectedExperimentId(e.currentTarget.value)}>
+                            {Object.keys(experiments).map((option) => (
+                                <MenuItem key={option} value={option}>
+                                {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+            <Grid2 container spacing={2} sx={{width: "100%", marginTop: 2}}>
                 
-            </>}
+                <Grid2 size={6}>
+                    <TextField
+                        id="experiment-picker"
+                        select
+                        size="small"
+                        sx={{width: "100%"}}
+                        label="Experiment Type"
+                        value={experiments && experiments[selectedExperimentId] && experiments[selectedExperimentId].experimentType}
+                        disabled>
+                            {experiment_types.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid2>
+                <Grid2 size={6}>
+                    <Button variant="outlined" sx={{width: "100%"}} onClick={resumeExperiment}>RESUME</Button>
+                </Grid2>
+            </Grid2>
+            </Box>}
         </CardContent>
     </Paper></Card>
     <Snackbar

@@ -67,9 +67,10 @@ function SensorCard({devicePacket, sensor_id, post_to_device}:
     </Card>
 }
 
-function SensorPanel({devicePacket, post_to_device}: {devicePacket: DevicePacket|undefined, post_to_device: (data: any) => void})
+function SensorPanel({devicePacket, post_to_device, sx}: 
+    {devicePacket: DevicePacket|undefined, post_to_device: (data: any) => void, sx: any})
 {
-    return <Card variant="outlined" sx={{height: "100%"}}>
+    return <Card variant="outlined" sx={{height: "100%", ...sx}}>
         <Paper>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">

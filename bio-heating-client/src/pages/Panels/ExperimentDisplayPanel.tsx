@@ -1,11 +1,12 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { convert_data, generate_csv } from "../../modules/data_helpers"
-import { collection, getDocs, query, Timestamp, where } from "firebase/firestore"
+import { collection, doc, getDocs, query, Timestamp, where } from "firebase/firestore"
 import { db } from "../../modules/firebase"
-import { Button, Card, CardContent, Paper, TextField, Typography } from "@mui/material"
+import { Button, Card, CardContent, FormControl, MenuItem, Paper, Select, TextField, Typography } from "@mui/material"
 import { axisClasses, LineChart } from "@mui/x-charts"
+import { ExperimentMap } from "../../../../shared/src/interfaces"
 
-function LegacyExperimentDisplayPanel({sx}: {sx: any})
+function ExperimentDisplayPanel({experiments, sx}: {experiments: ExperimentMap, sx: any})
 {
     const [experimentId, setExperimentId] = useState("")
     const [thread, setThread] = useState<[number, number, Timestamp][]>([])
@@ -13,6 +14,11 @@ function LegacyExperimentDisplayPanel({sx}: {sx: any})
     const [axisData, setAxisData] = useState<Date[]>([])
     const [controlData, setControlData] = useState<number[]>([])
     const [experimentalData, setExperimentalData] = useState<number[]>([])
+
+    useEffect(() => {
+        if (experimentId == "" && Object.keys(experiments).length > 0)
+            setExperimentId(Object.keys(experiments)[0])
+    }, [experiments])
 
     async function download_csv()
     {
@@ -30,7 +36,7 @@ function LegacyExperimentDisplayPanel({sx}: {sx: any})
 
     async function request_data()
     {
-        const q: any = query(collection(db, "experiment_data"), where('experiment_id', '==', experimentId))
+        const q: any = query(collection(db, "experiment_data", experimentId, "packets"))
         const docs = await getDocs(q)
 
         const packets: [number[], number[], Timestamp[]][] = []
@@ -79,19 +85,28 @@ function LegacyExperimentDisplayPanel({sx}: {sx: any})
         <Paper>
             <CardContent>
                 <Typography variant="h5">
-                    Legacy Experiment Data
+                    Experiment Data
                 </Typography>
                 <div style={{display: "flex", alignItems: "center"}}>
                 <Paper elevation={4} sx={{padding: 1, marginTop: 1}}>
+                    <FormControl>
                     <TextField id={`experiment_display_panel_input`} 
-                        label="Experiment ID" 
+                        select
+                        label="Experiment Id" 
                         variant="outlined" 
                         size="small"
                         value={experimentId}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        onChange={(event) => {
                             setExperimentId(event.target.value)
                         }}
-                        />
+                        >
+                            {Object.keys(experiments).map((option) => (
+                                <MenuItem key={option} value={option}>
+                                {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                        </FormControl>
                         <Button variant="outlined" sx={{marginLeft: 1}} onClick={request_data}>Display</Button>
                         <Button variant="outlined" sx={{marginLeft: 1}} onClick={download_csv}>Download</Button>
                 </Paper>
@@ -127,4 +142,4 @@ function LegacyExperimentDisplayPanel({sx}: {sx: any})
     </Card>
 }
 
-export default LegacyExperimentDisplayPanel
+export default ExperimentDisplayPanel

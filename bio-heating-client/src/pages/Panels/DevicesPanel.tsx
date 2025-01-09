@@ -2,11 +2,12 @@ import { Button, Card, CardActionArea, CardContent, Chip, Paper, Typography } fr
 import { DeviceData } from "../../../../shared/src/interfaces"
 import { useEffect, useState } from "react"
 
-function DevicesPanel({devicesData, selectedDevice, setSelectedDevice, refresh_devices_list}: 
+function DevicesPanel({devicesData, selectedDevice, setSelectedDevice, refresh_devices_list, sx}: 
     {
         devicesData: DeviceData[], selectedDevice: string|null, 
         setSelectedDevice: (n: string|null) => void, 
-        refresh_devices_list: () => void
+        refresh_devices_list: () => void,
+        sx: any
     })
 {
     const [devicesSorted, setDevicesSorted] = useState<DeviceData[]>([])
@@ -25,7 +26,7 @@ function DevicesPanel({devicesData, selectedDevice, setSelectedDevice, refresh_d
         setDevicesSorted(devices_data)
     }, [devicesData])
 
-    return <Card variant="outlined" sx={{height: "100%"}}>
+    return <Card variant="outlined" sx={{height: "100%", ...sx}}>
         <Paper><CardContent>
             <Typography variant="h5" component="div">
                 Devices

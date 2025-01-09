@@ -29,7 +29,9 @@ interface DevicePacket {
     simulation_sensor_configs: {[key: string]: string},
     env: {[key: string]: string},
     sensor_readings: {[key: string]: number},
-    device_state: DeviceState
+    device_state: DeviceState,
+    memory_usage: number,
+    cpu_temperature: number
 }
 
 interface DeviceMark {

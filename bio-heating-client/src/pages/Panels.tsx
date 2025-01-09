@@ -1,42 +1,38 @@
 import { collection, Timestamp, where } from "firebase/firestore"
 import { useState, useEffect } from "react"
 import { LineChart } from "@mui/x-charts"
-import { 
-    Button,
-    Card, 
-    CardActionArea, 
-    CardContent, 
-    Chip, 
-    Dialog, 
-    DialogTitle, 
-    Divider, 
-    Grid2, List, 
-    ListItem, 
-    ListItemButton, 
-    ListItemIcon, 
-    ListItemText, 
-    Paper, 
-    Snackbar, 
-    TextField, 
-    Typography 
+import {
+    Grid2, 
 } from "@mui/material"
-import { axisClasses } from '@mui/x-charts/ChartsAxis';
 import { DeviceData, DevicePacket, ExperimentData, ExperimentMap, SensorConfig } from "../../../shared/src/interfaces.js";
 
 import { db } from "../modules/firebase"
 import { query, getDocs } from "firebase/firestore"
 
-import { convert_data, generate_csv } from "../modules/data_helpers"
 import DevicesPanel from "./Panels/DevicesPanel";
 import PropertyEditPanel from "./Panels/PropertyEditPanel";
 import DeviceActionsPanel from "./Panels/DeviceActionsPanel";
 import DeviceDataPanel from "./Panels/DeviceDataPanel";
 import SensorPanel from "./Panels/SensorPanel";
+import ExperimentDisplayPanel from "./Panels/ExperimentDisplayPanel.js";
 import LegacyExperimentDisplayPanel from "./Panels/LegacyExperimentDisplayPanel.js";
 import ExperimentPanel from "./Panels/ExperimentPanel";
 import PanelsPanel from "./Panels/PanelsPanel";
 
 import dayjs from "dayjs"
+
+const defaultPanelStates = {
+    "Devices": true,
+    "Device Data": true,
+    "Device Properties": true,
+    "Device Sensors": false,
+    "Device Actions": true,
+    "Legacy Experiment Display": false,
+    "Experiment Display": true,
+    "Experiment Controls": true,
+}
+
+const defaultPanelOrder = Object.keys(defaultPanelStates)
 
 function Panels()
 {
@@ -46,16 +42,8 @@ function Panels()
     const [devicePacket, setDevicePacket] = useState<DevicePacket>()
     const [experiments, setExperiments] = useState<ExperimentMap>({})
 
-    const [activePanels, setActivePanels] = useState<Record<string, boolean>>({
-        "Devices": true,
-        "Device Data": true,
-        "Device Properties": true,
-        "Device Sensors": false,
-        "Device Actions": true,
-        "Legacy Experiment Display": false,
-        "Experiment Display": true,
-        "Experiment Controls": true,
-    })
+    const [activePanels, setActivePanels] = useState<Record<string, boolean>>(defaultPanelStates)
+    const [panelOrder, setPanelOrder] = useState(defaultPanelOrder)
 
     function getDeviceData(device_id: string): DeviceData|null
     {
@@ -107,8 +95,7 @@ function Panels()
         const fetches: Promise<void>[] = []
         querySnapshot.docs.map(async (doc) => {
             const data = doc.data() as DeviceData
-            try {
-                fetches.push(fetch(data.active_url)
+            fetches.push(fetch(data.active_url)
                 .then((response) => {
                     data.is_active = response.status === 200
                 })
@@ -119,10 +106,6 @@ function Panels()
                     console.log( data.device_id, data)
                     devices_data.push(data)
                 }))
-                
-            } catch(e) {
-
-            }
             
         })
         await Promise.all(fetches)
@@ -175,11 +158,14 @@ function Panels()
 
     return <Grid2 container spacing={2} sx={{margin: 2}}>
         <PanelsPanel 
+            order={panelOrder}
+            setOrder={setPanelOrder}
             activePanels={activePanels} 
             setActivePanels={setActivePanels}
         />
 
         {activePanels["Devices"] && <DevicesPanel 
+            sx={{order: panelOrder.indexOf("Devices")}}
             selectedDevice={selectedDevice} 
             setSelectedDevice={setSelectedDevice} 
             devicesData={devicesData}
@@ -187,11 +173,13 @@ function Panels()
         />}
 
         {activePanels["Device Data"] && <DeviceDataPanel 
+            sx={{order: panelOrder.indexOf("Device Data")}}
             selectedDevice={selectedDevice} 
             selectedDeviceData={selectedDeviceData}
         />}
 
         {activePanels["Device Properties"] && <PropertyEditPanel 
+            sx={{order: panelOrder.indexOf("Device Properties")}}
             post_to_device={post_to_device} 
             selectedDevice={selectedDevice} 
             devicePacket={devicePacket} 
@@ -199,18 +187,29 @@ function Panels()
         />}
 
         {activePanels["Device Actions"] && <DeviceActionsPanel 
+            sx={{order: panelOrder.indexOf("Device Actions")}}
             post_to_device={post_to_device} 
             selectedDeviceData={selectedDeviceData}
         />}
 
         {activePanels["Device Sensors"] && <SensorPanel 
+            sx={{order: panelOrder.indexOf("Device Sensors")}}
             devicePacket={devicePacket} 
             post_to_device={post_to_device}
         />}
 
-        {activePanels["Legacy Experiment Display"] && <LegacyExperimentDisplayPanel/>}
+        {activePanels["Experiment Display"] && <ExperimentDisplayPanel
+            experiments={experiments}
+            sx={{order: panelOrder.indexOf("Experiment Display")}}
+        />}
+
+        {activePanels["Legacy Experiment Display"] && <LegacyExperimentDisplayPanel
+            sx={{order: panelOrder.indexOf("Legacy Experiment Display")}}
+        />}
 
         {activePanels["Experiment Controls"] && <ExperimentPanel 
+            sx={{order: panelOrder.indexOf("Experiment Controls")}}
+            devicePacket={devicePacket}
             post_to_device={post_to_device} 
             selectedDeviceData={selectedDeviceData}
             experiments={experiments}
