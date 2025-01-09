@@ -3,7 +3,8 @@
     "target": "ES6",                   // Target a modern JavaScript version (or ESNext)
     "module": "ESNext",                // Use ES Module syntax
     "moduleResolution": "Node",        // Resolve modules like Node.js
-    "outDir": "./dist",                // Specify the output directory for compiled files
+    "outDir": "./dist",    
+    "rootDir": "./src",            // Specify the output directory for compiled files
     "strict": true,                    // Enable strict type-checking
     "esModuleInterop": true,           // Enable interoperability for CommonJS modules
     "skipLibCheck": true,              // Skip type-checking for library files
