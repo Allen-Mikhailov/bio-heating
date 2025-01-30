@@ -5,7 +5,7 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import { arrayUnion, collection, doc, getDoc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "./firebase.js";
-import { DeviceMark, ExperimentData } from "../../shared/src/interfaces.js";
+import { DeviceMark, ExperimentData } from "./shared/src/interfaces.js";
 import { env } from "./env_handler.js";
 
 interface ExperimentSensorConfig {
