@@ -11,7 +11,7 @@
     "resolveJsonModule": true,         // Enable importing JSON files
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@shared/*": ["../shared/*"]
+      "@shared/*": ["./src/shared/*"]
     }
   },
   "include": ["./src/**/*", "../shared/*"],
