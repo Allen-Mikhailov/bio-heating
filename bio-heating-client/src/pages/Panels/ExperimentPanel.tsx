@@ -46,7 +46,7 @@ function ExperimentPanel({post_to_device, selectedDeviceData, experiments, devic
 
         device_post({
             "action": "start_experiment", 
-            "new_experiment_type": experimentType, 
+            "experiment_type": experimentType, 
             "experiment_id": experimentId
         }, `Started Experiment "${experimentId}"`)
     }
