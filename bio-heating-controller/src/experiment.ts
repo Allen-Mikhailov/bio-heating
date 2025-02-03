@@ -92,8 +92,9 @@ class Experiment
 
     async push_start(): Promise<boolean>
     {
+        this.logger.info("Attempting to push start")
         const doc_obj = doc(db, "experiments", this.experiment_id)
-        const doc_snapshot = await getDoc(doc_obj)
+        const doc_snapshot = await getDoc(doc_obj).catch()
 
         const mark: DeviceMark = {
             deviceId: env.DEVICE_ID,
@@ -105,7 +106,10 @@ class Experiment
             // Is resuming
             updateDoc(doc_obj, {
                 marks: arrayUnion(mark)
+            }).catch(e => {
+                this.logger.error("Failed to update the experiment document with error: "+e)
             })
+            this.logger.info("Resuming experiment")
         } else {
             // Is creating
             const experimentData: ExperimentData = {
@@ -113,7 +117,10 @@ class Experiment
                 experimentType: this.name,
                 marks: [mark]
             }
-            setDoc(doc_obj, experimentData)
+            setDoc(doc_obj, experimentData).catch(e => {
+                this.logger.error("Failed to update the experiment document with error: "+e)
+            })
+            this.logger.info("Starting experiment")
         }
         
         return true;

@@ -78,6 +78,7 @@ function Panels()
             snapshot.docs.map((document) => {
                 experimentMap[document.id] = document.data() as ExperimentData;
             })
+            console.log("experimentMap", experimentMap)
             setExperiments(experimentMap);
         })
         

@@ -12,8 +12,8 @@ function ExperimentDisplayPanel({experiments, sx}: {experiments: ExperimentMap, 
     const [thread, setThread] = useState<[number, number, Timestamp][]>([])
 
     const [axisData, setAxisData] = useState<Date[]>([])
-    const [controlData, setControlData] = useState<number[]>([])
-    const [experimentalData, setExperimentalData] = useState<number[]>([])
+    const [controlData, setControlData] = useState<(number|null)[]>([])
+    const [experimentalData, setExperimentalData] = useState<(number|null)[]>([])
 
     useEffect(() => {
         if (experimentId == "" && Object.keys(experiments).length > 0)
@@ -36,7 +36,7 @@ function ExperimentDisplayPanel({experiments, sx}: {experiments: ExperimentMap, 
 
     async function request_data()
     {
-        const q: any = query(collection(db, "experiment_data", experimentId, "packets"))
+        const q: any = query(collection(db, "experiments", experimentId, "packets"))
         const docs = await getDocs(q)
 
         const packets: [number[], number[], Timestamp[]][] = []
@@ -50,29 +50,37 @@ function ExperimentDisplayPanel({experiments, sx}: {experiments: ExperimentMap, 
 
         docs.forEach(doc => {
             const data: firebase_packet = doc.data() as firebase_packet
+            console.log("Doc",data)
             packets.push([data.control_temp, data.experimental_temp, data.temperature_timestamps])
         })
         
+        console.log(packets)
         const new_thread = convert_data(packets)
 
         setThread(new_thread)
 
         // const start_time = new_thread[0][2].toMillis()/1000
 
-        const data_points = 50
+        const data_points = Math.min(new_thread.length, 50)
 
-        let new_control: number[] = []
-        let new_experimental: number[] = []
+        let new_control: (number|null)[] = []
+        let new_experimental: (number|null)[] = []
         let new_axis: Date[] = []
+
+        
+
         for (let i = 0; i < data_points; i++)
         {
             const j = Math.floor(i/data_points * new_thread.length)
-
-            new_control.push(new_thread[j][0])
-            new_experimental.push(new_thread[j][1])
+            
+            // Replace Nan with null
+            new_control.push(      isNaN(new_thread[j][0]) ? null : new_thread[j][0] )
+            new_experimental.push( isNaN(new_thread[j][1]) ? null : new_thread[j][1] )
             
             new_axis.push( (new_thread[j][2].toDate()))
         }
+
+        console.log(new_thread)
 
         setAxisData(new_axis)
         setControlData(new_control)
