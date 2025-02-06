@@ -62,7 +62,7 @@ class SimulationExperiment extends Experiment
 
         this.logger.info("Ticking")
         
-        if (control_temp == -1 || experimental_temp == -1)
+        if (control_temp == -1 || experimental_temp == -1 || isNaN(control_temp) || isNaN(experimental_temp))
         {   
             // Errored read
             this.logger.info("Errored sensor read")
