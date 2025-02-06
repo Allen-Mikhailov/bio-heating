@@ -66,7 +66,7 @@ class SimulationExperiment extends Experiment
         {   
             // Errored read
             this.logger.info("Errored sensor read")
-            set_heating(false)
+            // set_heating(false)
         } else {
             // Successful read
             const dif = experimental_temp - control_temp
